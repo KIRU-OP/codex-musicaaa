@@ -1,27 +1,6 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
 from pyrogram.enums import ChatType
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup,Message
+from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 from codex import app
 from codex.misc import SUDOERS, db
 from codex.utils.database import (
@@ -41,7 +20,7 @@ from ..formatters import int_to_alpha
 
 
 def AdminRightsCheck(mystic):
-    async def wrapper(client, message):
+    async def wrapper(client, message:Message):
         if await is_maintenance() is False:
             if message.from_user.id not in SUDOERS:
                 return await message.reply_text(
@@ -65,7 +44,7 @@ def AdminRightsCheck(mystic):
                     [
                         InlineKeyboardButton(
                             text="ʜᴏᴡ ᴛᴏ ғɪx ?",
-                            callback_data="SagarmousAdmin",
+                            callback_data="AnonymousAdmin",
                         ),
                     ]
                 ]
@@ -82,7 +61,10 @@ def AdminRightsCheck(mystic):
         else:
             chat_id = message.chat.id
         if not await is_active_chat(chat_id):
-            return await message.reply_text(_["general_5"])
+            try:
+                return await message.reply_text(_["general_5"])
+            except ChatWriteForbidden:
+                return
         is_non_admin = await is_nonadmin_chat(message.chat.id)
         if not is_non_admin:
             if message.from_user.id not in SUDOERS:
@@ -161,7 +143,7 @@ def AdminActual(mystic):
                     [
                         InlineKeyboardButton(
                             text="ʜᴏᴡ ᴛᴏ ғɪx ?",
-                            callback_data="SagarmousAdmin",
+                            callback_data="AnonymousAdmin",
                         ),
                     ]
                 ]
