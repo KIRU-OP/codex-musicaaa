@@ -1,0 +1,13 @@
+__pycache__/
+venv/
+myenv/
+.env
+database/
+downloads/
+cache/
+*.session
+*.session-journal
+log.txt
+nohup.out
+*.json
+node_modules/
