@@ -1,479 +1,596 @@
 import asyncio
 import os
-import random
 import re
-import urllib.parse
-from typing import Union
-
+from typing import List, Union
+import yt_dlp
 import aiohttp
+from pyrogram.enums import MessageEntityType
+from pyrogram.types import Message
 from py_yt import VideosSearch, Playlist
 
 API_URL = os.environ.get("MEOW_API_URL", "https://music.yukiapi.site")
+API_KEY = os.environ.get("MEOW_API_KEY", "yuki_7df1554f161bfa6ac85a56d3ba917f36")  # 🔑 Get Key: @MeowApiRobot On Telegram
 
-API_KEY = os.environ.get("MEOW_API_KEY", "YOUR_API_KEY") ## Get This API KEY FROM TELEGRAM BOT USERNAME: @MeowApiRobot
 DOWNLOAD_DIR = "downloads"
 
-_global_session: aiohttp.ClientSession | None = None
-_session_lock = asyncio.Lock()
+# ---------------------------------------------------------------------------
+# YouTube Data API v3 — key pool
+# ---------------------------------------------------------------------------
+# Set ONE OR MORE keys as a comma-separated env var, e.g.:
+#   export YOUTUBE_API_KEYS="key1,key2,key3"
+#
+# Do NOT hardcode real keys in this file. Keys committed to source control
+# (even in a private repo) get scraped and abused within hours, and Google
+# will revoke them the moment that happens.
+#
+# QUOTA NOTE: each key gives ~10,000 units/day (a search ≈ 100 units). The
+# pool below rotates to the next key on quotaExceeded, so effective daily
+# quota = 10,000 × number of keys. Only when every key is exhausted does it
+# fall back to a quota-free yt-dlp search (see _ytdlp_search_fallback).
+_raw_keys = os.environ.get("YOUTUBE_API_KEYS", "AIzaSyAuWd41xKkkd0HDq87dK9jHffW6lKzKWJs, AIzaSyBT9ffbKLBhRQDr8WWt3IH4FcXqenFjoO0, AIzaSyB3Mf15uCZ3oqpWRRScj9jxDt0WUI0YYJc").strip()
+YOUTUBE_API_KEYS: List[str] = [k.strip() for k in _raw_keys.split(",") if k.strip()]
+
+YOUTUBE_V3_BASE_URL = "https://www.googleapis.com/youtube/v3"
+
+_key_index_lock = asyncio.Lock()
+_current_key_index = 0
 
 
-async def get_session() -> aiohttp.ClientSession:
-    global _global_session
-    if _global_session is not None and not _global_session.closed:
-        return _global_session
-
-    async with _session_lock:
-        if _global_session is not None and not _global_session.closed:
-            return _global_session
-
-        connector = aiohttp.TCPConnector(
-            limit=100,
-            limit_per_host=50,
-            ttl_dns_cache=600,
-            keepalive_timeout=300,
-            enable_cleanup_closed=True,
-            force_close=False,
-        )
-        timeout = aiohttp.ClientTimeout(total=180, connect=10, sock_read=60)
-        _global_session = aiohttp.ClientSession(
-            connector=connector,
-            timeout=timeout,
-        )
-        return _global_session
+def time_to_seconds(time):
+    stringt = str(time)
+    return sum(int(x) * 60 ** i for i, x in enumerate(reversed(stringt.split(":"))))
 
 
-_thumb_cache: dict[str, str] = {}
-_THUMB_CACHE_MAX = 1000
-
-
-def _cache_thumb(vidid: str, url: str) -> str:
-    if len(_thumb_cache) >= _THUMB_CACHE_MAX:
-        del _thumb_cache[next(iter(_thumb_cache))]
-    _thumb_cache[vidid] = url
-    return url
-
-
-def _extract_video_id(link: str) -> str | None:
-    if not link:
+async def _get_current_key() -> Union[str, None]:
+    if not YOUTUBE_API_KEYS:
         return None
-    for pat in [
-        r"(?:v=|/)([0-9A-Za-z_-]{11})(?:[&?]|$)",
-        r"youtu\.be/([0-9A-Za-z_-]{11})",
-        r"embed/([0-9A-Za-z_-]{11})",
-        r"shorts/([0-9A-Za-z_-]{11})",
-    ]:
-        m = re.search(pat, link)
-        if m:
-            return m.group(1)
-    if re.fullmatch(r"[0-9A-Za-z_-]{11}", link.strip()):
-        return link.strip()
-    return None
+    async with _key_index_lock:
+        if _current_key_index >= len(YOUTUBE_API_KEYS):
+            return None
+        return YOUTUBE_API_KEYS[_current_key_index]
 
 
-def _clean_link(link: str) -> str:
-    return link.split("&")[0] if "&" in link else link
+async def _rotate_key() -> bool:
+    """Advance to the next key. Returns False if the pool is exhausted."""
+    global _current_key_index
+    async with _key_index_lock:
+        _current_key_index += 1
+        return _current_key_index < len(YOUTUBE_API_KEYS)
 
 
-def time_to_seconds(time_str: str) -> int:
-    if not time_str:
-        return 0
-    parts = time_str.split(":")
-    if len(parts) == 3:
-        return int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
-    elif len(parts) == 2:
-        return int(parts[0]) * 60 + int(parts[1])
-    return int(parts[0]) if parts[0].isdigit() else 0
+async def _reset_key_pool():
+    global _current_key_index
+    async with _key_index_lock:
+        _current_key_index = 0
 
 
-async def _fetch_oembed(video_id: str) -> dict | None:
-    session = await get_session()
-    url = f"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={video_id}&format=json"
-    try:
-        async with session.get(url, timeout=aiohttp.ClientTimeout(total=4)) as resp:
-            if resp.status == 200:
-                data = await resp.json()
-                title = data.get("title", "")
-                thumb = data.get("thumbnail_url", f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg")
-                return {
-                    "id": video_id,
-                    "title": title,
-                    "link": f"https://www.youtube.com/watch?v={video_id}",
-                    "duration": "0:00",
-                    "thumbnails": [{"url": thumb}],
-                }
-    except Exception:
-        pass
-    return None
-
-
-async def _search_vercel(query: str, limit: int = 1) -> list[dict]:
-    session = await get_session()
-    url = f"https://yt-music-api-seven.vercel.app/search/musics?query={urllib.parse.quote(query)}"
-    try:
-        async with session.get(url, timeout=aiohttp.ClientTimeout(total=6)) as resp:
-            if resp.status == 200:
-                data = await resp.json()
-                out = []
-                for item in data.get("content", []):
-                    vid_id = item.get("id")
-                    title = item.get("title")
-                    if not vid_id or not title:
-                        continue
-                    dur_obj = item.get("duration", {})
-                    dur_str = dur_obj.get("formatted") if isinstance(dur_obj, dict) else "0:00"
-                    thumbs = item.get("thumbnails", [])
-                    thumb = thumbs[-1].get("url") if thumbs else f"https://i.ytimg.com/vi/{vid_id}/hqdefault.jpg"
-                    out.append({
-                        "id": vid_id,
-                        "title": title,
-                        "link": f"https://www.youtube.com/watch?v={vid_id}",
-                        "duration": dur_str or "0:00",
-                        "thumbnails": [{"url": thumb}],
-                    })
-                    if len(out) >= limit:
-                        break
-                return out
-    except Exception:
-        pass
-    return []
-
-
-async def _search_one(query: str) -> dict | None:
-    vid = _extract_video_id(query)
-    if vid:
-        oembed = await _fetch_oembed(vid)
-        if oembed:
-            return oembed
-
-    try:
-        s = VideosSearch(query, limit=1)
-        res = await s.next()
-        items = res.get("result", [])
-        if items and items[0].get("id"):
-            r = items[0]
-            thumb = (
-                r["thumbnails"][0]["url"].split("?")[0]
-                if r.get("thumbnails")
-                else f"https://i.ytimg.com/vi/{r['id']}/hqdefault.jpg"
-            )
-            return {
-                "id": r["id"],
-                "title": r.get("title", query),
-                "link": r.get("link", f"https://www.youtube.com/watch?v={r['id']}"),
-                "duration": r.get("duration", "0:00"),
-                "thumbnails": [{"url": thumb}],
-            }
-    except Exception:
-        pass
-
-    vercel_results = await _search_vercel(query, limit=1)
-    if vercel_results:
-        return vercel_results[0]
-
-    try:
-        import yt_dlp
-        loop = asyncio.get_running_loop()
-
-        def _ytdlp_flat():
-            opts = {"extract_flat": True, "quiet": True, "no_warnings": True}
-            with yt_dlp.YoutubeDL(opts) as ydl:
-                target = query if vid else f"ytsearch1:{query}"
-                info = ydl.extract_info(target, download=False)
-                if "entries" in info and info["entries"]:
-                    return info["entries"][0]
-                return info
-
-        info = await loop.run_in_executor(None, _ytdlp_flat)
-        if info and info.get("id"):
-            v_id = info["id"]
-            dur_s = int(info.get("duration") or 0)
-            dur_str = f"{dur_s//60}:{dur_s%60:02d}" if dur_s else "0:00"
-            thumb = f"https://i.ytimg.com/vi/{v_id}/hqdefault.jpg"
-            return {
-                "id": v_id,
-                "title": info.get("title", query),
-                "link": f"https://www.youtube.com/watch?v={v_id}",
-                "duration": dur_str,
-                "thumbnails": [{"url": thumb}],
-            }
-    except Exception:
-        pass
-
-    if vid:
-        return {
-            "id": vid,
-            "title": f"YouTube Video ({vid})",
-            "link": f"https://www.youtube.com/watch?v={vid}",
-            "duration": "0:00",
-            "thumbnails": [{"url": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg"}],
+def _is_quota_error(status: int, payload: dict) -> bool:
+    if status == 403:
+        reasons = {
+            err.get("reason")
+            for err in (payload.get("error", {}).get("errors", []) or [])
         }
+        if "quotaExceeded" in reasons or "dailyLimitExceeded" in reasons:
+            return True
+    return False
+
+
+async def _v3_get(session: aiohttp.ClientSession, endpoint: str, params: dict):
+    """
+    Calls a YouTube Data API v3 endpoint, rotating keys on quota errors.
+    Returns the parsed JSON dict, or None if every key is exhausted / call fails.
+    """
+    if not YOUTUBE_API_KEYS:
+        return None
+
+    tries = len(YOUTUBE_API_KEYS)
+    for _ in range(tries):
+        key = await _get_current_key()
+        if key is None:
+            return None
+        request_params = dict(params)
+        request_params["key"] = key
+        url = f"{YOUTUBE_V3_BASE_URL}/{endpoint}"
+        try:
+            async with session.get(url, params=request_params, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+                data = await resp.json()
+                if resp.status == 200:
+                    return data
+                if _is_quota_error(resp.status, data):
+                    has_more = await _rotate_key()
+                    if not has_more:
+                        return None
+                    continue
+                # Non-quota error (bad request, disabled API, etc.) — no point rotating.
+                return None
+        except Exception:
+            return None
     return None
 
 
-async def _search_many(query: str, limit: int = 10) -> list[dict]:
-    try:
-        s = VideosSearch(query, limit=limit)
-        res = await s.next()
-        items = res.get("result", [])
-        out = []
-        for r in items:
-            if not r.get("id"):
-                continue
-            thumb = (
-                r["thumbnails"][0]["url"].split("?")[0]
-                if r.get("thumbnails")
-                else f"https://i.ytimg.com/vi/{r['id']}/hqdefault.jpg"
+def _seconds_to_min_str(seconds: int) -> str:
+    if not seconds:
+        return "0:00"
+    m, s = divmod(int(seconds), 60)
+    h, m = divmod(m, 60)
+    if h:
+        return f"{h}:{m:02d}:{s:02d}"
+    return f"{m}:{s:02d}"
+
+
+def _iso8601_duration_to_seconds(duration: str) -> int:
+    # e.g. "PT4M13S" -> 253
+    match = re.match(
+        r"PT(?:(\d+)D)?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?", duration or ""
+    )
+    if not match:
+        return 0
+    days, hours, minutes, secs = (int(x) if x else 0 for x in match.groups())
+    return days * 86400 + hours * 3600 + minutes * 60 + secs
+
+
+def _extract_video_id_from_query(query: str) -> Union[str, None]:
+    if "v=" in query:
+        return query.split("v=")[-1].split("&")[0]
+    if "youtu.be/" in query:
+        return query.split("youtu.be/")[-1].split("?")[0]
+    return None
+
+
+async def _ytdlp_search_fallback(query: str, limit: int = 1) -> list:
+    """
+    Quota-free fallback used only when the entire YOUTUBE_API_KEYS pool is
+    exhausted, or when no keys are configured at all. Uses yt-dlp's
+    ytsearch: pseudo-URL instead of scraping YouTube's HTML directly.
+    """
+    def _run():
+        ytdl_opts = {"quiet": True, "extract_flat": "in_playlist", "skip_download": True}
+        with yt_dlp.YoutubeDL(ytdl_opts) as ydl:
+            info = ydl.extract_info(f"ytsearch{limit}:{query}", download=False)
+            return info.get("entries") or []
+
+    loop = asyncio.get_event_loop()
+    entries = await loop.run_in_executor(None, _run)
+
+    results = []
+    for e in entries:
+        if not e:
+            continue
+        vid = e.get("id")
+        results.append(
+            {
+                "id": vid,
+                "title": e.get("title") or "Unknown",
+                "duration_sec": int(e.get("duration") or 0),
+                "duration_min": _seconds_to_min_str(e.get("duration") or 0),
+                "thumbnail": (e.get("thumbnails") or [{}])[-1].get("url", "") if e.get("thumbnails") else
+                             f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
+                "link": f"https://www.youtube.com/watch?v={vid}",
+            }
+        )
+    return results
+
+
+async def _v3_search(query: str, limit: int = 1) -> list:
+    """
+    Search via YouTube Data API v3, with automatic key rotation and
+    yt-dlp fallback if every key is exhausted or none are configured.
+    Returns a normalized list of dicts: id, title, duration_sec,
+    duration_min, thumbnail, link.
+    """
+    # A raw video ID/URL doesn't need a search call at all.
+    direct_id = _extract_video_id_from_query(query)
+
+    async with aiohttp.ClientSession() as session:
+        if direct_id and len(direct_id) == 11:
+            data = await _v3_get(
+                session,
+                "videos",
+                {"part": "snippet,contentDetails", "id": direct_id},
             )
-            out.append({
-                "id": r["id"],
-                "title": r.get("title", ""),
-                "link": r.get("link", f"https://www.youtube.com/watch?v={r['id']}"),
-                "duration": r.get("duration", "0:00"),
-                "thumbnails": [{"url": thumb}],
-            })
-        if out:
-            return out
-    except Exception:
-        pass
+            if data and data.get("items"):
+                item = data["items"][0]
+                snippet = item["snippet"]
+                secs = _iso8601_duration_to_seconds(item["contentDetails"]["duration"])
+                return [
+                    {
+                        "id": item["id"],
+                        "title": snippet["title"],
+                        "duration_sec": secs,
+                        "duration_min": _seconds_to_min_str(secs),
+                        "thumbnail": snippet["thumbnails"]["high"]["url"].split("?")[0],
+                        "link": f"https://www.youtube.com/watch?v={item['id']}",
+                    }
+                ]
+            # fall through to fallback below
 
-    vercel_results = await _search_vercel(query, limit=limit)
-    if vercel_results:
-        return vercel_results
+        else:
+            search_data = await _v3_get(
+                session,
+                "search",
+                {"part": "snippet", "q": query, "type": "video", "maxResults": limit},
+            )
+            if search_data and search_data.get("items"):
+                ids = [it["id"]["videoId"] for it in search_data["items"] if it.get("id", {}).get("videoId")]
+                if ids:
+                    details_data = await _v3_get(
+                        session,
+                        "videos",
+                        {"part": "snippet,contentDetails", "id": ",".join(ids)},
+                    )
+                    if details_data and details_data.get("items"):
+                        results = []
+                        for item in details_data["items"]:
+                            snippet = item["snippet"]
+                            secs = _iso8601_duration_to_seconds(item["contentDetails"]["duration"])
+                            results.append(
+                                {
+                                    "id": item["id"],
+                                    "title": snippet["title"],
+                                    "duration_sec": secs,
+                                    "duration_min": _seconds_to_min_str(secs),
+                                    "thumbnail": snippet["thumbnails"]["high"]["url"].split("?")[0],
+                                    "link": f"https://www.youtube.com/watch?v={item['id']}",
+                                }
+                            )
+                        return results
 
-    return []
+    # Every key exhausted, none configured, or the API call failed outright.
+    return await _ytdlp_search_fallback(query, limit=limit)
 
 
-async def download_media(video_id: str, is_video: bool = False) -> str:
-    if not API_KEY or API_KEY == "YOUR_API_KEY":
-        print("[Yuki API] Error: API_KEY is not set in environment or config.")
-        raise RuntimeError("API_KEY missing. Please set MEOW_API_KEY in .env or get from @MeowApiRobot")
+async def _ytdlp_search_multi_fallback(query: str, limit: int = 5) -> list:
+    """
+    Quota-free multi-result fallback for youtube_search_multi, used only
+    when the YOUTUBE_API_KEYS pool is exhausted or none are configured.
+    """
+    def _run():
+        ytdl_opts = {"quiet": True, "extract_flat": "in_playlist", "skip_download": True}
+        with yt_dlp.YoutubeDL(ytdl_opts) as ydl:
+            info = ydl.extract_info(f"ytsearch{limit}:{query}", download=False)
+            return info.get("entries") or []
+
+    loop = asyncio.get_event_loop()
+    entries = await loop.run_in_executor(None, _run)
+
+    results = []
+    for e in entries:
+        if not e:
+            continue
+        vid = e.get("id")
+        if not vid:
+            continue
+        dur_sec = int(e.get("duration") or 0)
+        thumb_list = e.get("thumbnails") or []
+        thumb_url = (
+            thumb_list[-1].get("url", "")
+            if thumb_list else f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg"
+        )
+        results.append(
+            {
+                "id": vid,
+                "title": e.get("title") or "Unknown",
+                "duration": _seconds_to_min_str(dur_sec),
+                "duration_sec": dur_sec,
+                "channel": e.get("channel") or e.get("uploader") or "",
+                "thumbnails": [{"url": thumb_url}] if thumb_url else [],
+                "thumbnail": thumb_url,
+                "link": f"https://www.youtube.com/watch?v={vid}",
+            }
+        )
+    return results
+
+
+async def youtube_search_multi(query: str, limit: int = 5) -> list:
+    """
+    Search YouTube and return up to `limit` normalized results, used by
+    RishuMusic.utils.stream.autoplay for picking the next similar song.
+
+    Each result dict has: id, title, duration (m:ss string), duration_sec,
+    channel (string), thumbnails (list of {"url": ...}), thumbnail
+    (string, same url), link. This shape matches what autoplay.py's
+    get_best_song() and its fallback loop read via .get(...).
+
+    Uses the same YOUTUBE_API_KEYS pool / key rotation as _v3_search, and
+    falls back to a quota-free yt-dlp search if every key is exhausted or
+    none are configured.
+    """
+    if not query:
+        return []
+
+    async with aiohttp.ClientSession() as session:
+        search_data = await _v3_get(
+            session,
+            "search",
+            {"part": "snippet", "q": query, "type": "video", "maxResults": limit},
+        )
+        if search_data and search_data.get("items"):
+            ids = [
+                it["id"]["videoId"]
+                for it in search_data["items"]
+                if it.get("id", {}).get("videoId")
+            ]
+            if ids:
+                details_data = await _v3_get(
+                    session,
+                    "videos",
+                    {"part": "snippet,contentDetails", "id": ",".join(ids)},
+                )
+                if details_data and details_data.get("items"):
+                    results = []
+                    for item in details_data["items"]:
+                        snippet = item["snippet"]
+                        secs = _iso8601_duration_to_seconds(
+                            item["contentDetails"]["duration"]
+                        )
+                        thumbs = snippet.get("thumbnails", {}) or {}
+                        thumb_url = (
+                            thumbs.get("high", {}).get("url")
+                            or thumbs.get("medium", {}).get("url")
+                            or thumbs.get("default", {}).get("url", "")
+                        )
+                        if thumb_url:
+                            thumb_url = thumb_url.split("?")[0]
+                        results.append(
+                            {
+                                "id": item["id"],
+                                "title": snippet.get("title", "Unknown"),
+                                "duration": _seconds_to_min_str(secs),
+                                "duration_sec": secs,
+                                "channel": snippet.get("channelTitle", ""),
+                                "thumbnails": [{"url": thumb_url}] if thumb_url else [],
+                                "thumbnail": thumb_url,
+                                "link": f"https://www.youtube.com/watch?v={item['id']}",
+                            }
+                        )
+                    return results
+
+    # Every key exhausted, none configured, or the API call failed outright.
+    return await _ytdlp_search_multi_fallback(query, limit=limit)
+
+
+async def download_song(link: str) -> str:
+    video_id = link.split("v=")[-1].split("&")[0] if "v=" in link else link
+    if not video_id or len(video_id) < 3:
+        return None
 
     os.makedirs(DOWNLOAD_DIR, exist_ok=True)
-    ext = "mp4" if is_video else "mp3"
-    req_type = "video" if is_video else "audio"
-    out_path = os.path.join(DOWNLOAD_DIR, f"{video_id}.{ext}")
+    file_path = os.path.join(DOWNLOAD_DIR, f"{video_id}.mp3")
 
-    if os.path.exists(out_path) and os.path.getsize(out_path) > 10000:
-        return out_path
+    if os.path.exists(file_path) and os.path.getsize(file_path) > 10000:
+        return file_path
 
-    session = await get_session()
-    stream_url = f"{API_URL}/stream/{video_id}?key={API_KEY}&type={req_type}&quality=360"
-
-    tmp_path = f"{out_path}.tmp.{random.randint(1000, 9999)}"
     try:
-        async with session.get(stream_url) as resp:
-            if resp.status == 200:
-                with open(tmp_path, "wb") as f:
-                    async for chunk in resp.content.iter_chunked(65536):
+        async with aiohttp.ClientSession() as session:
+            stream_url = f"{API_URL}/stream/{video_id}?key={API_KEY}&type=audio&quality=128"
+            async with session.get(stream_url, timeout=aiohttp.ClientTimeout(total=300)) as resp:
+                if resp.status != 200:
+                    return None
+                with open(file_path, "wb") as f:
+                    async for chunk in resp.content.iter_chunked(131072):
                         f.write(chunk)
 
-                if os.path.exists(tmp_path) and os.path.getsize(tmp_path) > 10000:
-                    os.replace(tmp_path, out_path)
-                    return out_path
-            elif resp.status == 401:
-                raise RuntimeError("Invalid API_KEY. Please get a valid key from @MeowApiRobot")
-    except Exception as e:
-        print(f"[Yuki API] Stream error for {video_id}: {e}")
-        raise
-    finally:
-        if os.path.exists(tmp_path):
+        if os.path.exists(file_path) and os.path.getsize(file_path) > 10000:
+            return file_path
+        return None
+    except Exception:
+        if os.path.exists(file_path):
             try:
-                os.remove(tmp_path)
-            except OSError:
+                os.remove(file_path)
+            except Exception:
                 pass
+        return None
 
-    if os.path.exists(out_path) and os.path.getsize(out_path) > 10000:
-        return out_path
-    raise RuntimeError(f"Yuki API download failed for {video_id}")
+
+async def download_video(link: str) -> str:
+    video_id = link.split("v=")[-1].split("&")[0] if "v=" in link else link
+    if not video_id or len(video_id) < 3:
+        return None
+
+    os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+    file_path = os.path.join(DOWNLOAD_DIR, f"{video_id}.mp4")
+
+    if os.path.exists(file_path) and os.path.getsize(file_path) > 10000:
+        return file_path
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            stream_url = f"{API_URL}/stream/{video_id}?key={API_KEY}&type=video&quality=480"
+            async with session.get(stream_url, timeout=aiohttp.ClientTimeout(total=600)) as resp:
+                if resp.status != 200:
+                    return None
+                with open(file_path, "wb") as f:
+                    async for chunk in resp.content.iter_chunked(131072):
+                        f.write(chunk)
+
+        if os.path.exists(file_path) and os.path.getsize(file_path) > 10000:
+            return file_path
+        return None
+    except Exception:
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except Exception:
+                pass
+        return None
 
 
 class YouTubeAPI:
     def __init__(self):
         self.base = "https://www.youtube.com/watch?v="
-        self.listbase = "https://www.youtube.com/playlist?list="
+        self.regex = r"(?:youtube\.com|youtu\.be)"
+        self.status = "https://www.youtube.com/oembed?url="
+        self.listbase = "https://youtube.com/playlist?list="
+        self.reg = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
-    async def exists(self, link: str, videoid: Union[bool, str] = None) -> bool:
-        vid = _extract_video_id(link) if not videoid else link
-        return bool(vid)
+    async def exists(self, link: str, videoid: Union[bool, str] = None):
+        if videoid:
+            link = self.base + link
+        return bool(re.search(self.regex, link))
 
-    async def url(self, message_or_text) -> str | None:
-        text = message_or_text.text if hasattr(message_or_text, "text") else str(message_or_text)
-        vid = _extract_video_id(text)
-        return f"https://www.youtube.com/watch?v={vid}" if vid else None
+    async def url(self, message_1: Message) -> Union[str, None]:
+        messages = [message_1]
+        if message_1.reply_to_message:
+            messages.append(message_1.reply_to_message)
+        for message in messages:
+            if message.entities:
+                for entity in message.entities:
+                    if entity.type == MessageEntityType.URL:
+                        text = message.text or message.caption
+                        return text[entity.offset: entity.offset + entity.length]
+            elif message.caption_entities:
+                for entity in message.caption_entities:
+                    if entity.type == MessageEntityType.TEXT_LINK:
+                        return entity.url
+        return None
 
     async def details(self, link: str, videoid: Union[bool, str] = None):
         if videoid:
             link = self.base + link
-        clean = _clean_link(link)
-        r = await _search_one(clean)
-        if not r:
-            raise RuntimeError(f"No track details found for: {link}")
+        if "&" in link:
+            link = link.split("&")[0]
+        results = await _v3_search(link, limit=1)
+        if not results:
+            return None
+        r = results[0]
+        return r["title"], r["duration_min"], r["duration_sec"], r["thumbnail"], r["id"]
 
-        title = r["title"]
-        dur_str = r["duration"]
-        dur_sec = time_to_seconds(dur_str)
-        thumb = r["thumbnails"][0]["url"]
-        vid = r["id"]
-        _cache_thumb(vid, thumb)
-        return title, dur_str, dur_sec, thumb, vid
-
-    async def title(self, link: str, videoid: Union[bool, str] = None) -> str:
+    async def title(self, link: str, videoid: Union[bool, str] = None):
         if videoid:
             link = self.base + link
-        r = await _search_one(_clean_link(link))
-        return r["title"] if r else ""
+        if "&" in link:
+            link = link.split("&")[0]
+        results = await _v3_search(link, limit=1)
+        return results[0]["title"] if results else None
 
-    async def duration(self, link: str, videoid: Union[bool, str] = None) -> str:
+    async def duration(self, link: str, videoid: Union[bool, str] = None):
         if videoid:
             link = self.base + link
-        r = await _search_one(_clean_link(link))
-        return r["duration"] if r else "0:00"
+        if "&" in link:
+            link = link.split("&")[0]
+        results = await _v3_search(link, limit=1)
+        return results[0]["duration_min"] if results else None
 
-    async def thumbnail(self, link: str, videoid: Union[bool, str] = None) -> str:
+    async def thumbnail(self, link: str, videoid: Union[bool, str] = None):
         if videoid:
             link = self.base + link
-        vid = _extract_video_id(link)
-        if vid and vid in _thumb_cache:
-            return _thumb_cache[vid]
-        r = await _search_one(_clean_link(link))
-        if r:
-            thumb = r["thumbnails"][0]["url"]
-            if vid:
-                _cache_thumb(vid, thumb)
-            return thumb
-        return f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg" if vid else ""
+        if "&" in link:
+            link = link.split("&")[0]
+        results = await _v3_search(link, limit=1)
+        return results[0]["thumbnail"] if results else None
+
+    async def video(self, link: str, videoid: Union[bool, str] = None):
+        if videoid:
+            link = self.base + link
+        if "&" in link:
+            link = link.split("&")[0]
+        try:
+            downloaded_file = await download_video(link)
+            if downloaded_file:
+                return 1, downloaded_file
+            return 0, "Video download failed"
+        except Exception as e:
+            return 0, f"Video download error: {e}"
+
+    async def playlist(self, link, limit, user_id, videoid: Union[bool, str] = None):
+        if videoid:
+            link = self.listbase + link
+        if "&" in link:
+            link = link.split("&")[0]
+        try:
+            plist = await Playlist.get(link)
+        except Exception:
+            return []
+        videos = plist.get("videos") or []
+        ids = []
+        for data in videos[:limit]:
+            if not data:
+                continue
+            vid = data.get("id")
+            if not vid:
+                continue
+            ids.append(vid)
+        return ids
 
     async def track(self, link: str, videoid: Union[bool, str] = None):
         if videoid:
             link = self.base + link
-        r = await _search_one(_clean_link(link))
-        if not r:
-            raise RuntimeError(f"No track found for: {link}")
-        thumb = r["thumbnails"][0]["url"]
-        _cache_thumb(r["id"], thumb)
-        return {
+        if "&" in link:
+            link = link.split("&")[0]
+        results = await _v3_search(link, limit=1)
+        if not results:
+            return None
+        r = results[0]
+        track_details = {
             "title": r["title"],
             "link": r["link"],
             "vidid": r["id"],
-            "duration_min": r["duration"],
-            "thumb": thumb,
-        }, r["id"]
-
-    async def playlist(self, link: str, limit: int, user_id: int, videoid: Union[bool, str] = None) -> list[str]:
-        if videoid:
-            link = self.listbase + link
-        clean = _clean_link(link)
-
-        list_id = None
-        if "list=" in link:
-            m = re.search(r"[?&]list=([0-9A-Za-z_-]+)", link)
-            if m:
-                list_id = m.group(1)
-
-        targets = [clean]
-        if list_id and list_id.startswith("RD"):
-            seed_vid = list_id[2:]
-            if "_" in seed_vid:
-                seed_vid = seed_vid.split("_")[-1]
-            elif len(seed_vid) >= 11:
-                seed_vid = seed_vid[:11]
-            if seed_vid:
-                targets.insert(0, f"https://www.youtube.com/watch?v={seed_vid}&list={list_id}")
-
-        try:
-            import yt_dlp
-            for tgt in targets:
-                try:
-                    loop = asyncio.get_running_loop()
-
-                    def _extract_pl(url_to_extract):
-                        opts = {"extract_flat": True, "quiet": True, "no_warnings": True, "playlistend": limit}
-                        with yt_dlp.YoutubeDL(opts) as ydl:
-                            info = ydl.extract_info(url_to_extract, download=False) or {}
-                            entries = info.get("entries") or []
-                            return [
-                                f"https://www.youtube.com/watch?v={e['id']}"
-                                for e in entries
-                                if e and e.get("id")
-                            ]
-
-                    res = await loop.run_in_executor(None, _extract_pl, tgt)
-                    if res:
-                        return res[:limit]
-                except Exception:
-                    pass
-        except ImportError:
-            pass
-
-        try:
-            plist = Playlist(clean)
-            while plist.hasMore():
-                await plist.getNext()
-                if len(plist.videos) >= limit:
-                    break
-            if plist.videos:
-                return [v["link"] for v in plist.videos[:limit]]
-        except Exception:
-            pass
-        return []
+            "duration_min": r["duration_min"],
+            "thumb": r["thumbnail"],
+        }
+        return track_details, r["id"]
 
     async def formats(self, link: str, videoid: Union[bool, str] = None):
         if videoid:
             link = self.base + link
-        return [], link
+        if "&" in link:
+            link = link.split("&")[0]
+        ytdl_opts = {"quiet": True}
+        ydl = yt_dlp.YoutubeDL(ytdl_opts)
+        with ydl:
+            formats_available = []
+            r = ydl.extract_info(link, download=False)
+            for format in r["formats"]:
+                try:
+                    if "dash" not in str(format["format"]).lower():
+                        formats_available.append(
+                            {
+                                "format": format["format"],
+                                "filesize": format.get("filesize"),
+                                "format_id": format["format_id"],
+                                "ext": format["ext"],
+                                "format_note": format["format_note"],
+                                "yturl": link,
+                            }
+                        )
+                except Exception:
+                    continue
+        return formats_available, link
 
     async def slider(self, link: str, query_type: int, videoid: Union[bool, str] = None):
         if videoid:
             link = self.base + link
-        items = await _search_many(_clean_link(link), limit=10)
-        if not items:
-            raise RuntimeError(f"No search results for: {link}")
-        if query_type >= len(items):
-            query_type = 0
-        r = items[query_type]
-        thumb = r["thumbnails"][0]["url"]
-        _cache_thumb(r["id"], thumb)
-        return r["title"], r["duration"], thumb, r["id"]
-
-    async def video(self, link: str, videoid: Union[bool, str] = None):
-        vid = _extract_video_id(link) or (link if videoid else None)
-        if not vid:
-            return 0, None
-        try:
-            path = await download_media(vid, is_video=True)
-            return 1, path
-        except Exception as e:
-            print(f"[video] Error: {e}")
-            return 0, None
-
-    async def is_live(self, link: str, videoid: Union[bool, str] = None) -> bool:
-        return False
+        if "&" in link:
+            link = link.split("&")[0]
+        results = await _v3_search(link, limit=10)
+        if not results or query_type >= len(results):
+            return None
+        r = results[query_type]
+        return r["title"], r["duration_min"], r["thumbnail"], r["id"]
 
     async def download(
         self,
         link: str,
-        mystic=None,
+        mystic,
         video: Union[bool, str] = None,
         videoid: Union[bool, str] = None,
         songaudio: Union[bool, str] = None,
         songvideo: Union[bool, str] = None,
         format_id: Union[bool, str] = None,
         title: Union[bool, str] = None,
-    ) -> tuple[str, bool]:
-        is_vid = bool(video or songvideo)
-        vid = _extract_video_id(link) or link
-        path = await download_media(vid, is_video=is_vid)
-        return path, True
+    ) -> str:
+        if videoid:
+            link = self.base + link
+        try:
+            if video:
+                downloaded_file = await download_video(link)
+            else:
+                downloaded_file = await download_song(link)
+            if downloaded_file:
+                return downloaded_file, True
+            return None, False
+        except Exception:
+            return None, False
 
 
 YouTube = YouTubeAPI()
-
-
-async def download_song(link: str) -> str:
-    vid = _extract_video_id(link) or link
-    return await download_media(vid, is_video=False)
-
-
-async def download_video(link: str) -> str:
-    vid = _extract_video_id(link) or link
-    return await download_media(vid, is_video=True)
