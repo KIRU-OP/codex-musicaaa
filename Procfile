@@ -1,1 +1,1 @@
-worker: python3 -m Pulse
+worker: bash start
