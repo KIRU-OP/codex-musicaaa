@@ -1,44 +1,22 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
 from typing import Union
 
 from pyrogram.types import InlineKeyboardButton
-from pyrogram.enums import ButtonStyle
 
 
 def setting_markup(_):
     buttons = [
         [
-            InlineKeyboardButton(text=_["ST_B_1"], callback_data="AU", style=ButtonStyle.PRIMARY, icon_custom_emoji_id="5397733426654626788"),
-            InlineKeyboardButton(text=_["ST_B_3"], callback_data="LG", style=ButtonStyle.PRIMARY, icon_custom_emoji_id="6255793039705377676"),
+            InlineKeyboardButton(text=_["ST_B_1"], callback_data="AU"),
+            InlineKeyboardButton(text=_["ST_B_3"], callback_data="LG"),
         ],
         [
-            InlineKeyboardButton(text=_["ST_B_2"], callback_data="PM", style=ButtonStyle.SUCCESS, icon_custom_emoji_id="5343597635926245720"),
+            InlineKeyboardButton(text=_["ST_B_2"], callback_data="PM"),
         ],
         [
-            InlineKeyboardButton(text=_["ST_B_4"], callback_data="VM", style=ButtonStyle.PRIMARY, icon_custom_emoji_id="5235682785863153026"),
+            InlineKeyboardButton(text=_["ST_B_4"], callback_data="VM"),
         ],
         [
-            InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close", style=ButtonStyle.DANGER, icon_custom_emoji_id="6152069270269334526"),
+            InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close"),
         ],
     ]
     return buttons
