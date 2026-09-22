@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=timeGradient&height=260&section=header&text=codexMusic&fontSize=80&animation=fadeIn&fontAlignY=35&desc=A%20Modern,%20Fast%20%26%20Secure%20Telegram%20Music%20Bot&descAlignY=55&descAlign=50" />
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=timeGradient&height=220&section=header&text=codexMusic&fontSize=80&animation=fadeIn&fontAlignY=35" />
 </h1>
 
 <p align="center">
