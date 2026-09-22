@@ -7,11 +7,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/SUDEEPBOTS/codexMusic/stargazers"><img src="https://img.shields.io/github/stars/SUDEEPBOTS/codexMusic?color=00FFFB&logo=github&logoColor=white&style=for-the-badge&labelColor=0d1117" alt="Stars" /></a>
-  <a href="https://github.com/SUDEEPBOTS/codexMusic/network/members"><img src="https://img.shields.io/github/forks/SUDEEPBOTS/codexMusic?color=00FFFB&logo=github&logoColor=white&style=for-the-badge&labelColor=0d1117" alt="Forks" /></a>
-  <a href="https://github.com/SUDEEPBOTS/codexMusic/issues"><img src="https://img.shields.io/github/issues/SUDEEPBOTS/codexMusic?color=00FFFB&logo=github&logoColor=white&style=for-the-badge&labelColor=0d1117" alt="Issues" /></a>
-  <a href="https://github.com/SUDEEPBOTS/codexMusic/blob/main/LICENSE"><img src="https://img.shields.io/github/license/SUDEEPBOTS/codexMusic?color=00FFFB&style=for-the-badge&labelColor=0d1117" alt="License" /></a>
-  <a href="https://github.com/SUDEEPBOTS/codexMusic/commits/main"><img src="https://img.shields.io/github/last-commit/SUDEEPBOTS/codexMusic?color=00FFFB&style=for-the-badge&labelColor=0d1117" alt="Last Commit" /></a>
+  <a href="https://github.com/KIRU-OP/codex-music/stargazers"><img src="https://img.shields.io/github/stars/KIRU-OP/codex-music?color=00FFFB&logo=github&logoColor=white&style=for-the-badge&labelColor=0d1117" alt="Stars" /></a>
+  <a href="https://github.com/KIRU-OP/codex-music/network/members"><img src="https://img.shields.io/github/forks/KIRU-OP/codex-music?color=00FFFB&logo=github&logoColor=white&style=for-the-badge&labelColor=0d1117" alt="Forks" /></a>
+  <a href="https://github.com/KIRU-OP/codex-music/issues"><img src="https://img.shields.io/github/issues/KIRU-OP/codex-music?color=00FFFB&logo=github&logoColor=white&style=for-the-badge&labelColor=0d1117" alt="Issues" /></a>
+  <a href="https://github.com/KIRU-OP/codex-music/blob/main/LICENSE"><img src="https://img.shields.io/github/license/KIRU-OP/codex-music?color=00FFFB&style=for-the-badge&labelColor=0d1117" alt="License" /></a>
+  <a href="https://github.com/KIRU-OP/codex-music/commits/main"><img src="https://img.shields.io/github/last-commit/KIRU-OP/codex-music?color=00FFFB&style=for-the-badge&labelColor=0d1117" alt="Last Commit" /></a>
 </p>
 
 <p align="center">
@@ -106,13 +106,13 @@
 <h3 align="center">☁️ One-Click Deploy</h3>
 
 <p align="center">
-<a href="https://dashboard.heroku.com/new?template=https://github.com/SUDEEPBOTS/codexMusic">
+<a href="https://dashboard.heroku.com/new?template=https://github.com/KIRU-OP/codex-music">
   <img src="https://img.shields.io/badge/Deploy%20on%20Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white" height="45"/>
 </a>
-<a href="https://render.com/deploy?repo=https://github.com/SUDEEPBOTS/codexMusic">
+<a href="https://render.com/deploy?repo=https://github.com/KIRU-OP/codex-music">
   <img src="https://img.shields.io/badge/Deploy%20on%20Render-46E3B7?style=for-the-badge&logo=render&logoColor=white" height="45"/>
 </a>
-<a href="https://railway.app/new?template=https://github.com/SUDEEPBOTS/codexMusic">
+<a href="https://railway.app/new?template=https://github.com/KIRU-OP/codex-music">
   <img src="https://img.shields.io/badge/Deploy%20on%20Railway-131415?style=for-the-badge&logo=railway&logoColor=white" height="45"/>
 </a>
 </p>
@@ -122,7 +122,7 @@
 
 **1. Clone the repository**
 ```bash
-git clone https://github.com/SUDEEPBOTS/codexMusic
+git clone https://github.com/KIRU-OP/codex-music
 cd codexMusic
 ```
 
@@ -159,7 +159,7 @@ tmux new-session -d -s codexMusic "bash start"
 <summary><h3>🐳 Deploy with Docker</h3></summary>
 
 ```bash
-git clone https://github.com/SUDEEPBOTS/codexMusic
+git clone https://github.com/KIRU-OP/codex-music
 cd codexMusic
 cp sample.env .env   # fill in your credentials
 
