@@ -23,13 +23,24 @@ def stream_markup_timer(_, chat_id, played, dur):
     played_sec = time_to_seconds(played)
     duration_sec = time_to_seconds(dur)
 
+    # --- FIX 1: agar duration 0/None/live-stream hai to divide-by-zero se bacho ---
+    if duration_sec <= 0:
+        duration_sec = max(played_sec, 1)  # fallback so math never breaks
+
+    # --- FIX 2: played_sec ko duration ke andar clamp karo (seek ke baad
+    # kabhi kabhi played > duration ho jata hai jisse remaining negative ho jata) ---
+    played_sec = max(0, min(played_sec, duration_sec))
+
     # Remaining (ulta/countdown) time — total duration me se
     # ab tak play hua time ghata kar nikala jaata hai
     remaining_sec = duration_sec - played_sec
     remaining_time = seconds_to_time(remaining_sec)
 
     percentage = (played_sec / duration_sec) * 100
+    # --- FIX 3: percentage ko 0-100 ke beech clamp karo ---
+    percentage = max(0, min(percentage, 100))
     umm = math.floor(percentage)
+
     if 0 < umm <= 12:
         bar = "▰▱▱▱▱▱▱▱"
     elif 12 < umm < 25:
@@ -44,8 +55,10 @@ def stream_markup_timer(_, chat_id, played, dur):
         bar = "▰▰▰▰▰▰▱▱"
     elif 75 <= umm < 87:
         bar = "▰▰▰▰▰▰▰▱"
-    else:
+    elif umm >= 87:
         bar = "▰▰▰▰▰▰▰▰"
+    else:  # umm == 0
+        bar = "▱▱▱▱▱▱▱▱"
 
     buttons = [
         # Row 1: Progress bar with timing
@@ -119,6 +132,8 @@ def track_markup(_, videoid, user_id, channel, fplay):
         ],
     ]
     return buttons
+
+
 def playlist_markup(_, videoid, user_id, ptype, channel, fplay):
     buttons = [
         [
