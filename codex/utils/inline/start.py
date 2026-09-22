@@ -51,7 +51,7 @@ def private_panel(_):
         [
             InlineKeyboardButton(
                 text="𝐂ʜᴀɴɴᴇʟ",
-                url=config.UPDATE_CHANNEL,
+                url=config.SUPPORT_CHANNEL,
                 style=ButtonStyle.PRIMARY
             ),
             InlineKeyboardButton(
