@@ -4,67 +4,37 @@ from pyrogram.types import InlineKeyboardButton
 from pyrogram.enums import ButtonStyle
 from codex.utils.formatters import time_to_seconds
 
-
-def seconds_to_time(seconds):
-    """
-    Seconds ko wapas "MM:SS" (ya lambi duration ke liye "HH:MM:SS")
-    format mein convert karta hai. Real/ulta (remaining) timer
-    dikhane ke kaam aata hai.
-    """
-    seconds = max(0, int(seconds))
-    hours, remainder = divmod(seconds, 3600)
-    minutes, secs = divmod(remainder, 60)
-    if hours:
-        return f"{hours:02}:{minutes:02}:{secs:02}"
-    return f"{minutes:02}:{secs:02}"
-
-
 def stream_markup_timer(_, chat_id, played, dur):
     played_sec = time_to_seconds(played)
     duration_sec = time_to_seconds(dur)
-
-    # --- FIX 1: agar duration 0/None/live-stream hai to divide-by-zero se bacho ---
-    if duration_sec <= 0:
-        duration_sec = max(played_sec, 1)  # fallback so math never breaks
-
-    # --- FIX 2: played_sec ko duration ke andar clamp karo (seek ke baad
-    # kabhi kabhi played > duration ho jata hai jisse remaining negative ho jata) ---
-    played_sec = max(0, min(played_sec, duration_sec))
-
-    # Remaining (ulta/countdown) time — total duration me se
-    # ab tak play hua time ghata kar nikala jaata hai
-    remaining_sec = duration_sec - played_sec
-    remaining_time = seconds_to_time(remaining_sec)
-
     percentage = (played_sec / duration_sec) * 100
-    # --- FIX 3: percentage ko 0-100 ke beech clamp karo ---
-    percentage = max(0, min(percentage, 100))
     umm = math.floor(percentage)
-
-    if 0 < umm <= 12:
-        bar = "▰▱▱▱▱▱▱▱"
-    elif 12 < umm < 25:
-        bar = "▰▰▱▱▱▱▱▱"
-    elif 25 <= umm < 37:
-        bar = "▰▰▰▱▱▱▱▱"
-    elif 37 <= umm < 50:
-        bar = "▰▰▰▰▱▱▱▱"
-    elif 50 <= umm < 62:
-        bar = "▰▰▰▰▰▱▱▱"
-    elif 62 <= umm < 75:
-        bar = "▰▰▰▰▰▰▱▱"
-    elif 75 <= umm < 87:
-        bar = "▰▰▰▰▰▰▰▱"
-    elif umm >= 87:
-        bar = "▰▰▰▰▰▰▰▰"
-    else:  # umm == 0
-        bar = "▱▱▱▱▱▱▱▱"
+    if 0 < umm <= 10:
+        bar = "▰▱▱▱▱▱▱▱▱▱"
+    elif 10 < umm < 20:
+        bar = "▰▰▱▱▱▱▱▱▱▱"
+    elif 20 <= umm < 30:
+        bar = "▰▰▰▱▱▱▱▱▱▱"
+    elif 30 <= umm < 40:
+        bar = "▰▰▰▰▱▱▱▱▱▱"
+    elif 40 <= umm < 50:
+        bar = "▰▰▰▰▰▱▱▱▱▱"
+    elif 50 <= umm < 60:
+        bar = "▰▰▰▰▰▰▱▱▱▱"
+    elif 60 <= umm < 70:
+        bar = "▰▰▰▰▰▰▰▱▱▱"
+    elif 70 <= umm < 80:
+        bar = "▰▰▰▰▰▰▰▰▱▱"
+    elif 80 <= umm < 95:
+        bar = "▰▰▰▰▰▰▰▰▰▱"
+    else:
+        bar = "▰▰▰▰▰▰▰▰▰▰"
 
     buttons = [
         # Row 1: Progress bar with timing
         [
             InlineKeyboardButton(
-                text=f"{played.lower()} {bar} -{remaining_time}",
+                text=f"{played.lower()}  {bar}  {dur.lower()}",
                 callback_data="GetTimer"
             )
         ],
@@ -75,7 +45,7 @@ def stream_markup_timer(_, chat_id, played, dur):
             InlineKeyboardButton(text="‣‣I", callback_data=f"ADMIN Skip|{chat_id}", style=ButtonStyle.PRIMARY),
             InlineKeyboardButton(text="▢", callback_data=f"ADMIN Stop|{chat_id}", style=ButtonStyle.DANGER),
         ],
-        # Row 3: Seek backward / Download / Seek forward
+        # Row 3: Backward, Download, Forward
         [
             InlineKeyboardButton(text="⪻  -30s", callback_data=f"SEEKBACKWARD|{chat_id}|30", style=ButtonStyle.DEFAULT),
             InlineKeyboardButton(text="📥", callback_data=f"DOWNLOAD|{chat_id}", style=ButtonStyle.DEFAULT),
@@ -98,7 +68,7 @@ def stream_markup(_, chat_id):
             InlineKeyboardButton(text="‣‣I", callback_data=f"ADMIN Skip|{chat_id}", style=ButtonStyle.PRIMARY),
             InlineKeyboardButton(text="▢", callback_data=f"ADMIN Stop|{chat_id}", style=ButtonStyle.DANGER),
         ],
-        # Row 2: Seek backward / Download / Seek forward
+        # Row 2: Seek / Download
         [
             InlineKeyboardButton(text="⪻  -30s", callback_data=f"SEEKBACKWARD|{chat_id}|30", style=ButtonStyle.DEFAULT),
             InlineKeyboardButton(text="📥", callback_data=f"DOWNLOAD|{chat_id}", style=ButtonStyle.DEFAULT),
@@ -132,8 +102,6 @@ def track_markup(_, videoid, user_id, channel, fplay):
         ],
     ]
     return buttons
-
-
 def playlist_markup(_, videoid, user_id, ptype, channel, fplay):
     buttons = [
         [
