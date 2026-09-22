@@ -1,82 +1,97 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
-# Importing important modules & bot
-
-from codex import app
 from typing import Union
+
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-#------------------------------------------------------------------------#
+from codex import app
 
 
+def help_pannel(_, is_sudo, START: Union[bool, int] = None):
+    first = [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data=f"close")]
+    second = [
+        InlineKeyboardButton(
+            text=_["BACK_BUTTON"],
+            callback_data=f"settingsback_helper",
+        ),
+    ]
+    mark = second if START else first
 
-from pyrogram.enums import ButtonStyle
-
-# creating first partition of menu
-
-def first_page(_):
-    controll_button = [InlineKeyboardButton(text="ʙᴀᴄᴋ ⤶", callback_data="settingsback_helper", style=ButtonStyle.DANGER, icon_custom_emoji_id="6152069270269334526")]
-    first_page_menu = InlineKeyboardMarkup(
+    upl = [
         [
-            [InlineKeyboardButton(text=_["H_B_1"], callback_data="help_callback hb1", style=ButtonStyle.PRIMARY), InlineKeyboardButton(text=_["H_B_2"], callback_data="help_callback hb2", style=ButtonStyle.PRIMARY), InlineKeyboardButton(text=_["H_B_3"], callback_data="help_callback hb3", style=ButtonStyle.PRIMARY)],
-            [InlineKeyboardButton(text=_["H_B_4"], callback_data="help_callback hb4", style=ButtonStyle.SUCCESS), InlineKeyboardButton(text=_["H_B_5"], callback_data="help_callback hb5", style=ButtonStyle.SUCCESS), InlineKeyboardButton(text=_["H_B_6"], callback_data="help_callback hb6", style=ButtonStyle.SUCCESS)],
-            [InlineKeyboardButton(text=_["H_B_7"], callback_data="help_callback hb7", style=ButtonStyle.PRIMARY), InlineKeyboardButton(text=_["H_B_8"], callback_data="help_callback hb8", style=ButtonStyle.PRIMARY), InlineKeyboardButton(text=_["H_B_9"], callback_data="help_callback hb9", style=ButtonStyle.PRIMARY)],
-            controll_button,
+            InlineKeyboardButton(
+                text=_["H_B_10"],
+                callback_data="help_callback hb10",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text=_["H_B_1"],
+                callback_data="help_callback hb1",
+            ),
+            InlineKeyboardButton(
+                text=_["H_B_2"],
+                callback_data="help_callback hb2",
+            ),
+            InlineKeyboardButton(
+                text=_["H_B_3"],
+                callback_data="help_callback hb3",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text=_["H_B_4"],
+                callback_data="help_callback hb4",
+            ),
+            InlineKeyboardButton(
+                text=_["H_B_5"],
+                callback_data="help_callback hb5",
+            ),
+            InlineKeyboardButton(
+                text=_["H_B_6"],
+                callback_data="help_callback hb6",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text=_["H_B_7"],
+                callback_data="help_callback hb7",
+            ),
+            InlineKeyboardButton(
+                text=_["H_B_8"],
+                callback_data="help_callback hb8",
+            ),
+            InlineKeyboardButton(
+                text=_["H_B_9"],
+                callback_data="help_callback hb9",
+            ),
+        ],
+    ]
+
+    upl.append(mark)
+
+    return InlineKeyboardMarkup(upl)
+
+
+def help_back_markup(_):
+    upl = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    text=_["BACK_BUTTON"],
+                    callback_data=f"settings_back_helper",
+                ),
+            ]
         ]
     )
-    return first_page_menu
+    return upl
 
 
-
-
-# creating second partition of menu
-
-def second_page(_):
-	controll_button = [InlineKeyboardButton(text="◁", callback_data=f"settings_back_helper_fixed", style=ButtonStyle.PRIMARY, icon_custom_emoji_id="6255793039705377676"), InlineKeyboardButton(text="HOME", callback_data=f"settingsback_helper", style=ButtonStyle.SUCCESS, icon_custom_emoji_id="5397733426654626788"), InlineKeyboardButton(text="▷", callback_data=f"settings_back_helper", style=ButtonStyle.PRIMARY, icon_custom_emoji_id="6255793039705377676")]
-	second_page_menu = InlineKeyboardMarkup(
-		[
-			[InlineKeyboardButton(text=_["H_B_10"], callback_data="help_callback hb10", style=ButtonStyle.PRIMARY), InlineKeyboardButton(text=_["H_B_11"], callback_data="help_callback hb11", style=ButtonStyle.PRIMARY), InlineKeyboardButton(text=_["H_B_12"], callback_data="help_callback hb12", style=ButtonStyle.PRIMARY)],
-			[InlineKeyboardButton(text=_["H_B_13"], callback_data="help_callback hb13", style=ButtonStyle.SUCCESS), InlineKeyboardButton(text=_["H_B_14"], callback_data="help_callback hb14", style=ButtonStyle.SUCCESS), InlineKeyboardButton(text=_["H_B_15"], callback_data="help_callback hb15", style=ButtonStyle.SUCCESS)],
-			[InlineKeyboardButton(text=_["H_B_16"], callback_data="help_callback hb16", style=ButtonStyle.PRIMARY)],
-			controll_button,
-		]
-	)
-	return second_page_menu
-
-
-# Just an common button
-def help_back_markup(_):
-	upl = InlineKeyboardMarkup([[InlineKeyboardButton(text=_["BACK_BUTTON"], callback_data=f"settings_back_helper", style=ButtonStyle.DANGER, icon_custom_emoji_id="6152069270269334526")]])
-	return upl
-
-
-# Ease of access 
 def private_help_panel(_):
-	buttons = [[InlineKeyboardButton(text=_["S_B_4"], url=f"https://t.me/{app.username}?start=help", style=ButtonStyle.PRIMARY, icon_custom_emoji_id="6152069270269334526")]]
-	return buttons
-
-
-
-#----------------------------> NOTE <-----------------------------#
-"""
-Written By Dil.
-"""
+    buttons = [
+        [
+            InlineKeyboardButton(
+                text=_["S_B_4"],
+                url=f"https://t.me/{app.username}?start=help",
+            ),
+        ],
+    ]
+    return buttons
