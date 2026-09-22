@@ -1,42 +1,35 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
+# v2 — Changes from v1:
+# - Removed fetch_tts_models(), fetch_image_models(), fetch_ai_models() (used YTPROXY_URL)
+# - Removed hb16, hb17, hb18, hb19 branches from helper_cb (AI/TTS/Image model settings menu)
+# - Removed tts_model_callback, image_model_callback, ai_model_callback handlers
+# - Removed unused `import aiohttp`
 
+import random
 from typing import Union
 
 from pyrogram import filters, types
-from pyrogram.types import InlineKeyboardMarkup, Message
+from pyrogram.types import InlineKeyboardMarkup, Message, InlineKeyboardButton, CallbackQuery
+from pyrogram.errors import MessageNotModified
+from pyrogram.enums import ParseMode
 
 from codex import app
-from codex.utils import first_page, second_page
+from codex.misc import SUDOERS
+from codex.utils import help_pannel
 from codex.utils.database import get_lang
 from codex.utils.decorators.language import LanguageStart, languageCB
 from codex.utils.inline.help import help_back_markup, private_help_panel
 from config import BANNED_USERS, START_IMG_URL, SUPPORT_CHAT
+import config
 from strings import get_string, helpers
 
 
 @app.on_message(filters.command(["help"]) & filters.private & ~BANNED_USERS)
 @app.on_callback_query(filters.regex("settings_back_helper") & ~BANNED_USERS)
-async def helper_private(client: app, update: Union[types.Message, types.CallbackQuery]):
+async def helper_private(
+    client, update: Union[types.Message, types.CallbackQuery]
+):
     is_callback = isinstance(update, types.CallbackQuery)
+    is_sudo = update.from_user.id in SUDOERS
     if is_callback:
         try:
             await update.answer()
@@ -45,7 +38,7 @@ async def helper_private(client: app, update: Union[types.Message, types.Callbac
         chat_id = update.message.chat.id
         language = await get_lang(chat_id)
         _ = get_string(language)
-        keyboard = first_page(_)
+        keyboard = help_pannel(_, is_sudo, True)
         await update.edit_message_text(
             _["help_1"].format(SUPPORT_CHAT), reply_markup=keyboard
         )
@@ -56,37 +49,12 @@ async def helper_private(client: app, update: Union[types.Message, types.Callbac
             pass
         language = await get_lang(update.chat.id)
         _ = get_string(language)
-        keyboard = first_page(_)
+        keyboard = help_pannel(_, is_sudo)
         await update.reply_photo(
-            photo=START_IMG_URL,
+            photo=random.choice(config.START_IMG_URL),
             caption=_["help_1"].format(SUPPORT_CHAT),
             reply_markup=keyboard,
         )
-
-@app.on_callback_query(filters.regex("settings_back_helper_fixed") & ~BANNED_USERS)
-async def helper_private(client: app, update: Union[types.Message, types.CallbackQuery]):
-    is_callback = isinstance(update, types.CallbackQuery)
-    if is_callback:
-        try:
-            await update.answer()
-        except:
-            pass
-        chat_id = update.message.chat.id
-        language = await get_lang(chat_id)
-        _ = get_string(language)
-        keyboard = first_page(_)
-        await update.edit_message_text(_["help_1"].format(SUPPORT_CHAT), reply_markup=keyboard)
-    else:
-        try:
-            await update.delete()
-        except:
-            pass
-        language = await get_lang(update.chat.id)
-        _ = get_string(language)
-        keyboard = first_page(_)
-        await update.reply_photo(photo=START_IMG_URL, caption=_["help_1"].format(SUPPORT_CHAT), reply_markup=keyboard)
-    
-
 
 
 @app.on_message(filters.command(["help"]) & filters.group & ~BANNED_USERS)
@@ -98,7 +66,7 @@ async def help_com_group(client, message: Message, _):
 
 @app.on_callback_query(filters.regex("help_callback") & ~BANNED_USERS)
 @languageCB
-async def helper_cb(client, CallbackQuery, _):
+async def helper_cb(client, CallbackQuery:CallbackQuery, _):
     callback_data = CallbackQuery.data.strip()
     cb = callback_data.split(None, 1)[1]
     keyboard = help_back_markup(_)
@@ -132,31 +100,3 @@ async def helper_cb(client, CallbackQuery, _):
         await CallbackQuery.edit_message_text(helpers.HELP_14, reply_markup=keyboard)
     elif cb == "hb15":
         await CallbackQuery.edit_message_text(helpers.HELP_15, reply_markup=keyboard)
-    elif cb == "hb16":
-        await CallbackQuery.edit_message_text(helpers.HELP_16, reply_markup=keyboard)
-
-Dil_Text = ("ᴄʜᴏᴏsᴇ ᴛʜᴇ ᴄᴀᴛᴇɢᴏʀʏ ғᴏʀ ᴡʜɪᴄʜ ʏᴏᴜ ᴡᴀɴɴᴀ ɢᴇᴛ ʜᴇʟᴩ.\nᴀsᴋ ʏᴏᴜʀ ᴅᴏᴜʙᴛs ᴀᴛ <a href={0}>sᴜᴘᴘᴏʀᴛ ᴄʜᴀᴛ</a>\n\nᴀʟʟ ᴄᴏᴍᴍᴀɴᴅs ᴄᴀɴ ʙᴇ ᴜsᴇᴅ ᴡɪᴛʜ: <code>/</code>")
-
-@app.on_callback_query(filters.regex("dilXaditi") & ~BANNED_USERS)
-@languageCB
-async def first_pagexx(client, CallbackQuery, _):
-    menu_next = second_page(_)
-    try:
-        await CallbackQuery.message.edit_text(Dil_Text, reply_markup=menu_next)
-        return
-    except:
-        return
-
-@app.on_callback_query(filters.regex("Adisa") & ~BANNED_USERS)
-@languageCB
-async def first_pagee(client, CallbackQuery, _):
-    menu_next = second_page(_)
-    try:
-        await CallbackQuery.message.edit_text(Dil_Text, reply_markup=menu_next)
-        return
-    except:
-        return
-
-
-# Do not try to change whole code, just add or remove what you want.
-# Credited To Dil(Adisa)
