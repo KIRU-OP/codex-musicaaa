@@ -1,24 +1,3 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
 import asyncio
 import importlib
 
@@ -27,12 +6,11 @@ from pytgcalls.exceptions import NoActiveGroupCall
 
 import config
 from codex import LOGGER, app, userbot
-from codex.core.call import Sagar
+from codex.core.call import Anony
 from codex.misc import sudo
 from codex.plugins import ALL_MODULES
 from codex.utils.database import get_banned_users, get_gbanned
 from config import BANNED_USERS
-
 
 async def init():
     if (
@@ -44,14 +22,6 @@ async def init():
     ):
         LOGGER(__name__).error("Assistant client variables not defined, exiting...")
         exit()
-    if config.RENDER:
-        try:
-            import server
-            server.keep_alive_ping()
-            LOGGER(__name__).info("Web server started for Render keep-alive.")
-        except Exception as e:
-            LOGGER(__name__).error(f"Failed to start web server: {e}")
-
     await sudo()
     try:
         users = await get_gbanned()
@@ -65,26 +35,23 @@ async def init():
     await app.start()
     for all_module in ALL_MODULES:
         importlib.import_module("codex.plugins" + all_module)
-    LOGGER("codex.plugins").info("sᴜᴄᴄᴇssғᴜʟʟʏ ɪᴍᴘᴏʀᴛᴇᴅ ᴀʟʟ ᴍᴏᴅᴜʟᴇs...")
+    LOGGER("codex.plugins").info("Successfully Imported Modules...")
     await userbot.start()
-    await Sagar.start()
+    await Anony.start()
     try:
-        await Sagar.stream_call("https://te.legra.ph/file/39b302c93da5c457a87e3.mp4")
+        await Anony.stream_call("https://te.legra.ph/file/29f784eb49d230ab62e9e.mp4")
     except NoActiveGroupCall:
         LOGGER("codex").error(
-            "Please turn on the Voice Chat in your Logger Group/Channel.\n\nBot is shutting down..."
+            "Please turn on the videochat of your log group\channel.\n\nStopping Bot..."
         )
         exit()
     except:
         pass
-    await Sagar.decorators()
-    LOGGER("codex").info(
-        "codex Music Bot Started Successfully!"
-    )
+
+    await Anony.decorators()
     await idle()
     await app.stop()
-    await userbot.stop()
-    LOGGER("codex").info("Stopping codex Music Bot...")
+    LOGGER("codex").info("Stopping AnonX Music Bot...")
 
 
 if __name__ == "__main__":
