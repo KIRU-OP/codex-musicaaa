@@ -1,27 +1,8 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
 import asyncio
-
+import os
+import time
 from pyrogram import filters
+from pyrogram.types import Message
 from pyrogram.enums import ChatMembersFilter
 from pyrogram.errors import FloodWait
 
@@ -36,14 +17,14 @@ from codex.utils.database import (
 )
 from codex.utils.decorators.language import language
 from codex.utils.formatters import alpha_to_int
-from config import adminlist
+from config import adminlist, CACHE_DURATION, CACHE_SLEEP ,file_cache, autoclean
 
 IS_BROADCASTING = False
 
 
 @app.on_message(filters.command("broadcast") & SUDOERS)
 @language
-async def braodcast_message(client, message, _):
+async def braodcast_message(client, message:Message, _):
     global IS_BROADCASTING
     if message.reply_to_message:
         x = message.reply_to_message.id
@@ -186,5 +167,29 @@ async def auto_clean():
         except:
             continue
 
+
+async def auto_clean_cache():
+    """Periodically clean up expired files"""
+    while not await asyncio.sleep(CACHE_SLEEP):
+        try:
+            current_time = time.time()
+            expired_files = [
+                file_path
+                for file_path, last_access in file_cache.items()
+                if current_time - last_access > CACHE_DURATION
+                and file_path not in autoclean
+            ]
+            
+            for file_path in expired_files:
+                try:
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                        file_cache.pop(file_path, None)
+                except:
+                    continue
+        except:
+            continue
+
+asyncio.create_task(auto_clean_cache())
 
 asyncio.create_task(auto_clean())
