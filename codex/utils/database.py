@@ -1,24 +1,3 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
 import random
 from typing import Dict, List, Union
 
@@ -40,10 +19,9 @@ onoffdb = mongodb.onoffper
 playmodedb = mongodb.playmode
 playtypedb = mongodb.playtypedb
 skipdb = mongodb.skipmode
-sudoersdb = mongodb.sudoerm
+sudoersdb = mongodb.sudoers
 usersdb = mongodb.tgusersdb
-apikeydb = mongodb.apikeys
-
+modeldb = mongodb.model
 
 # Shifting to memory [mongo sucks often]
 active = []
@@ -60,21 +38,6 @@ pause = {}
 playmode = {}
 playtype = {}
 skipmode = {}
-
-
-# ✅ Async get_api_key
-async def get_api_key() -> Union[str, None]:
-    """Fetch API key from DB (async version)"""
-    data = await apikeydb.find_one({})
-    return data["api_key"] if data else None
-
-
-# ✅ Async set_api_key
-async def set_api_key(new_key: str):
-    """Replace old API key with new one (async version)"""
-    await apikeydb.delete_many({})
-    await apikeydb.insert_one({"api_key": new_key})
-    return True
 
 
 async def get_assistant_number(chat_id: int) -> str:
@@ -682,3 +645,23 @@ async def remove_banned_user(user_id: int):
     if not is_gbanned:
         return
     return await blockeddb.delete_one({"user_id": user_id})
+
+
+async def get_model_settings() -> dict:
+    settings = await modeldb.find_one({"model": "settings"})
+    if not settings:
+        return {"tts": "athena", "image": "stable-diffusion", "ai": "GPT4"}
+    return settings["settings"]
+
+
+async def update_model_settings(settings: dict) -> bool:
+    current_settings = await get_model_settings()
+
+    updated_settings = {**current_settings, **settings}
+
+    await modeldb.update_one(
+        {"model": "settings"},
+        {"$set": {"settings": updated_settings}},
+        upsert=True
+    )
+    return True
