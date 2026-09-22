@@ -178,7 +178,7 @@ queue_7 : "\n❖ ᴄʟɪᴄᴋ ᴏɴ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ɢᴇ
 queue_8 : "<b>❖ {0} ᴘʟᴀʏᴇʀ</b> ❖\n\n● <b>sᴛʀᴇᴀᴍɪɴɢ ➥</b> {1}\n\n● <b>sᴛʀᴇᴀᴍ ᴛʏᴘᴇ ➥</b> {2}\n● <b>ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ ➥</b> {3}\n{4}"
 
 stream_1 : "<blockquote><b><emoji id='6255793039705377676'>🦋</emoji> 𝐒ᴛᴀꝛᴛєᴅ 𝐒ᴛꝛєᴀϻιηɢ <emoji id='6255793039705377676'>🦋</emoji></b></blockquote>\n<blockquote><b><emoji id='5238162283368035495'>🌙</emoji> 𝐓ιᴛʟє ➜</b> <a href={0}>{1}</a>\n<b><emoji id='5343597635926245720'>📄</emoji> 𝐃ᴜꝛᴀᴛιᴏη ➜</b> {2} ϻιηᴜᴛєs\n<b><emoji id='5296631769112525274'>👻</emoji> 𝐁ʏ ➜</b> {3}</blockquote>\n<blockquote><b><emoji id='5397733426654626788'>✨</emoji> 𝐏ᴏᴡєꝛєᴅ 𝐁ʏ ➜ 𝐏ᴜʟsє 𝚳ᴜsιᴄ <emoji id='5397733426654626788'>✨</emoji></b></blockquote>"
-stream_2 : "<blockquote><b><emoji id='6255793039705377676'>🦋</emoji> 𝐒ᴛᴀꝛᴛєᴅ 𝐒ᴛꝛєᴀϻιηɢ <emoji id='6255793039705377676'>🦋</emoji></b></blockquote>\n<blockquote><b><emoji id='5238162283368035495'>🌙</emoji> 𝐒ᴛꝛєᴀϻ 𝐓ʏᴘє ➜</b> 𝐋ιᴠє 𝐒ᴛꝛєᴀϻ\n<b><emoji id='5296631769112525274'>👻</emoji> 𝐁ʏ ➜</b> {0}</blockquote>\n<blockquote><b><emoji id='5397733426654626788'>✨</emoji> 𝐏ᴏᴡєꝛєᴅ 𝐁ʏ ➜ ˹ᴀᴇʀᴀ ꭙ ᴍᴜsɪᴄ˼ ♪ <emoji id='5397733426654626788'>✨</emoji></b></blockquote>"
+stream_2 : "<blockquote><b><emoji id='6255793039705377676'>🦋</emoji> 𝐒ᴛᴀꝛᴛєᴅ 𝐒ᴛꝛєᴀϻιηɢ <emoji id='6255793039705377676'>🦋</emoji></b></blockquote>\n<blockquote><b><emoji id='5238162283368035495'>🌙</emoji> 𝐒ᴛꝛєᴀϻ 𝐓ʏᴘє ➜</b> 𝐋ιᴠє 𝐒ᴛꝛєᴀϻ\n<b><emoji id='5296631769112525274'>👻</emoji> 𝐁ʏ ➜</b> {0}</blockquote>\n<blockquote><b><emoji id='5397733426654626788'>✨</emoji> 𝐏ᴏᴡєꝛєᴅ 𝐁ʏ ➜ ᴀᴇʀᴀ ꭙ ᴍᴜsɪᴄ ♪ <emoji id='5397733426654626788'>✨</emoji></b></blockquote>"
 
 CLOSE_BUTTON  : "˹ 𝐂ʟᴏsє ˼"
 BACK_BUTTON : "˹ 𝐁ᴀᴄᴋ ˼"
