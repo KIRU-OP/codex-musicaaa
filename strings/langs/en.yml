@@ -1,8 +1,7 @@
 name : 🇺🇸 English
 
-
 general_1 : "❖ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴜsᴇʀ's ᴍᴇssᴀɢᴇ ᴏʀ ɢɪᴠᴇ ᴜsᴇʀɴᴀᴍᴇ/ᴜsᴇʀ ɪᴅ."
-general_2 : "❖ sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ ғᴏʀᴡᴀʀᴅ [The Owner](https://t.me/DEVTAL) .\n\n● ᴇxᴄᴇᴘᴛɪᴏɴ ➥ <code>{0}</code>"
+general_2 : "❖ sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ ғᴏʀᴡᴀʀᴅ [𝐕 𝚬 𝚴 𝚶 𝚳 ⴕ](https://t.me/kiru_bots).\n\n● ᴇxᴄᴇᴘᴛɪᴏɴ ➥ <code>{0}</code>"
 general_3 : "❖ ʏᴏᴜ'ʀᴇ ᴀɴ ᴀɴᴏɴʏᴍᴏᴜs ᴀᴅᴍɪɴ ɪɴ ᴛʜɪs ᴄʜᴀᴛ, ʀᴇᴠᴇʀᴛ ʙᴀᴄᴋ ᴛᴏ ᴜsᴇʀ ᴀᴄᴄᴏᴜɴᴛ ғᴏʀ ᴜsɪɴɢ ᴍᴇ."
 general_4 : "❖ ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪssɪᴏɴs ᴛᴏ ᴍᴀɴᴀɢᴇ ᴠɪᴅᴇᴏ ᴄʜᴀᴛs.\n\n● ʀᴇʟᴏᴀᴅ ᴀᴅᴍɪɴ ᴄᴀᴄʜᴇ ᴠɪᴀ /reload"
 general_5 : "❖ ʙᴏᴛ ɪsɴ'ᴛ sᴛʀᴇᴀᴍɪɴɢ ᴏɴ ᴠɪᴅᴇᴏᴄʜᴀᴛ."
@@ -94,7 +93,7 @@ start_8 : "ᴛʜᴇ sᴜᴅᴏ ᴜsᴇʀ ᴏғ {0}, {1} ᴊᴜsᴛ ᴊᴏɪɴᴇ
 start_9 : "<blockquote><b>⌬ ᴛʜɪs ɪs ᴀᴅᴠᴀɴᴄᴇᴅ ᴍᴜsɪᴄ ᴘʟᴀʏᴇʀ ʙᴏᴛ ғᴏʀ ᴛᴇʟᴇɢʀᴀᴍ ɢʀᴏᴜᴘs + ᴄʜᴀɴɴᴇʟs ᴠᴄ.</blockquote>\n<blockquote>❍ ᴘʟᴀʏ + ᴠᴘʟᴀʏ + ᴄᴘʟᴀʏ ..... ✓\n❍ ʟɪᴠᴇ ʀᴀᴅɪᴏ sᴜᴘᴘᴏʀᴛ ....... ✓\n❍ ᴀᴜᴛᴏ-ᴀᴘᴘʀᴏᴠᴇ ............... ✓\n❍ sᴏɴɢ ᴅᴏᴡ. ᴏʀ sᴛʀᴇᴀᴍ .... ✓\n❍ ʏᴏᴜᴛᴜʙᴇ sᴇᴀʀᴄʜ ᴇᴄᴛ ...... ✓</blockquote>\n<blockquote>🔐 ᴜɴʟᴏᴄᴋ /help ғᴏʀ ᴍᴏʀᴇ.</blockquote>\n<blockquote>❖ ᴘᴏᴡᴇʀᴇᴅ ʙʏ ➥ codexMusic</b></blockquote>"
 
 
-help_1 : "<blockquote><b><emoji id='5397733426654626788'>✨</emoji> ᴄʜᴏᴏsᴇ ᴀ ᴄᴀᴛᴇɢᴏʀʏ ғᴏʀ ʜᴇʟᴘ.</b></blockquote>\n<blockquote><b><emoji id='6255793039705377676'>🦋</emoji> ᴀsᴋ ᴅᴏᴜʙᴛs ➥ <a href={0}>sᴜᴘᴘᴏʀᴛ ᴄʜᴀᴛ</a></b></blockquote>\n<blockquote><b><emoji id='5343597635926245720'>📄</emoji> ᴜsᴇ ᴄᴏᴍᴍᴀɴᴅs ᴡɪᴛʜ ➥ <code>/</code></b></blockquote>\n\n<blockquote><b><emoji id='5296631769112525274'>👻</emoji> ᴘᴏᴡᴇʀᴇᴅ ʙʏ ➥ 𝐏ᴜʟsє 𝚳ᴜsιᴄ</b></blockquote>"
+help_1 : "<blockquote><b><emoji id='5397733426654626788'>✨</emoji> ᴄʜᴏᴏsᴇ ᴀ ᴄᴀᴛᴇɢᴏʀʏ ғᴏʀ ʜᴇʟᴘ.</b></blockquote>\n<blockquote><b><emoji id='6255793039705377676'>🦋</emoji> ᴀsᴋ ᴅᴏᴜʙᴛs ➥ <a href={0}>sᴜᴘᴘᴏʀᴛ ᴄʜᴀᴛ</a></b></blockquote>\n<blockquote><b><emoji id='5343597635926245720'>📄</emoji> ᴜsᴇ ᴄᴏᴍᴍᴀɴᴅs ᴡɪᴛʜ ➥ <code>/</code></b></blockquote>\n\n<blockquote><b><emoji id='5296631769112525274'>👻</emoji> ᴘᴏᴡᴇʀᴇᴅ ʙʏ ➥ [ᴀᴇʀᴀ ꭙ ᴍᴜsɪᴄ](https://t.me/kiru_bots)</b></blockquote>"
 help_2 : "<blockquote><b>❖ ᴄʟɪᴄᴋ ᴏɴ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ɢᴇᴛ ᴍʏ ʜᴇʟᴘ ᴍᴇɴᴜ ɪɴ ʏᴏᴜʀ ᴘᴍ.</b></blockquote>"
 
 lang_1 : "❖ ᴘʟᴇᴀsᴇ ᴄʜᴏᴏsᴇ ᴛʜᴇ ʟᴀɴɢᴜᴀɢᴇ ᴡʜɪᴄʜ ʏᴏᴜ ᴡᴀɴɴᴀ sᴇᴛ ᴀs ᴛʜɪs ɢʀᴏᴜᴘ's ᴅᴇғᴀᴜʟᴛ ʟᴀɴɢᴜᴀɢᴇ"
@@ -166,19 +165,19 @@ str_2 : "❖ ᴠᴀʟɪᴅ sᴛʀᴇᴀᴍ ᴠᴇʀɪғɪᴇᴅ.\n\n● ᴘʀᴏ
 str_3 : "❖ ғᴀɪʟᴇᴅ ᴛᴏ sᴛʀᴇᴀᴍ ʏᴏᴜᴛᴜʙᴇ ʟɪᴠᴇ sᴛʀᴇᴀᴍ, ɴᴏ ʟɪᴠᴇ ꜰᴏʀᴍᴀᴛ ꜰᴏᴜɴᴅ."
 
 ping_1 : "❖ {0} ɪs ᴘɪɴɢɪɴɢ..."
-ping_2 : "<blockquote><b><emoji id='5397733426654626788'>✨</emoji> 𝐏ᴜʟsє 𝚳ᴜsιᴄ 𝐈s 𝚫ʟιᴠє <emoji id='5397733426654626788'>✨</emoji></b></blockquote>\n<blockquote>╭✠──────⊱◈◈◈⊰──────✠╮\n│<b><emoji id='6255793039705377676'>🦋</emoji> 𝐏ιηɢ ➜</b>  <code>{0}ϻs</code>\n│<b><emoji id='5343597635926245720'>📄</emoji> 𝐔ᴘᴛιϻє ➜</b> {2}\n│<b><emoji id='5238162283368035495'>🌙</emoji> 𝐑ᴀϻ ➜</b> {3}\n│<b><emoji id='5235682785863153026'>🎩</emoji> 𝐂ᴘᴜ ➜</b> {4}\n│<b><emoji id='5296631769112525274'>👻</emoji> 𝐃ιsᴋ ➜</b> {5}\n│<b><emoji id='6152163768139782590'>💥</emoji> 𝐏ʏ𝐓ɢ𝐂ᴀʟʟs ➜</b> <code>{6}ϻs</code>\n╰✠──────⊱◈◈◈⊰──────✠╯</blockquote>\n<blockquote><b><emoji id='6152069270269334526'>💔</emoji> 𝐏ᴏᴡєꝛєᴅ 𝐁ʏ ➜ ᴀᴇʀᴀ ꭙ ᴍᴜsɪᴄ <emoji id='6152069270269334526'>💀</emoji></b></blockquote>"
+ping_2 : "<blockquote><b><emoji id='5397733426654626788'>✨</emoji> ᴀᴇʀᴀ ꭙ ᴍᴜsɪᴄ 𝐈s 𝚫ʟιᴠє <emoji id='5397733426654626788'>✨</emoji></b></blockquote>\n<blockquote>╭✠──────⊱◈◈◈⊰──────✠╮\n│<b><emoji id='6255793039705377676'>🦋</emoji> 𝐏ιηɢ ➜</b>  <code>{0}ϻs</code>\n│<b><emoji id='5343597635926245720'>📄</emoji> 𝐔ᴘᴛιϻє ➜</b> {2}\n│<b><emoji id='5238162283368035495'>🌙</emoji> 𝐑ᴀϻ ➜</b> {3}\n│<b><emoji id='5235682785863153026'>🎩</emoji> 𝐂ᴘᴜ ➜</b> {4}\n│<b><emoji id='5296631769112525274'>👻</emoji> 𝐃ιsᴋ ➜</b> {5}\n│<b><emoji id='6152163768139782590'>💥</emoji> 𝐏ʏ𝐓ɢ𝐂ᴀʟʟs ➜</b> <code>{6}ϻs</code>\n╰✠──────⊱◈◈◈⊰──────✠╯</blockquote>\n<blockquote><b><emoji id='6152069270269334526'>💔</emoji> 𝐏ᴏᴡєꝛєᴅ 𝐁ʏ ➜ [ᴀᴇʀᴀ ꭙ ᴍᴜsɪᴄ](https://t.me/kiru_bots)<emoji id='6152069270269334526'>💀</emoji></b></blockquote>"
 
 queue_1 : "❖ ғᴇᴛᴄʜɪɴɢ ǫᴜᴇᴜᴇ...\n\nᴘʟᴇᴀsᴇ ᴡᴀɪᴛ..."
 queue_2 : "❖ ǫᴜᴇᴜᴇ ᴇᴍᴘᴛʏ."
 queue_3 : "❖ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ᴄʜᴇᴄᴋ ᴛʜᴇ ʟɪsᴛ ᴏғ ᴛʜᴇ ǫᴜᴇᴜᴇᴅ ᴛʀᴀᴄᴋs ➥ <a href={0}>ʜᴇʀᴇ</a>"
-queue_4 : "<blockquote><b><emoji id='6255793039705377676'>🦋</emoji> 𝐐ᴜєᴜєᴅ 𝐓ꝛᴀᴄᴋ ➜ #{0} <emoji id='6255793039705377676'>🦋</emoji></b></blockquote>\n<blockquote><b><emoji id='5238162283368035495'>🌙</emoji> 𝐓ιᴛʟє ➜</b> {1}\n<b><emoji id='5343597635926245720'>📄</emoji> 𝐃ᴜꝛᴀᴛιᴏη ➜</b> {2} ϻιηᴜᴛєs\n<b><emoji id='5296631769112525274'>👻</emoji> 𝐁ʏ ➜</b> {3}</blockquote>\n<blockquote><b><emoji id='5397733426654626788'>✨</emoji> 𝐏ᴏᴡєꝛєᴅ 𝐁ʏ ➜ ᴀᴇʀᴀ ꭙ ᴍᴜsɪᴄ <emoji id='5397733426654626788'>✨</emoji></b></blockquote>"
+queue_4 : "<blockquote><b><emoji id='6255793039705377676'>🦋</emoji> 𝐐ᴜєᴜєᴅ 𝐓ꝛᴀᴄᴋ ➜ #{0} <emoji id='6255793039705377676'>🦋</emoji></b></blockquote>\n<blockquote><b><emoji id='5238162283368035495'>🌙</emoji> 𝐓ιᴛʟє ➜</b> {1}\n<b><emoji id='5343597635926245720'>📄</emoji> 𝐃ᴜꝛᴀᴛιᴏη ➜</b> {2} ϻιηᴜᴛєs\n<b><emoji id='5296631769112525274'>👻</emoji> 𝐁ʏ ➜</b> {3}</blockquote>\n<blockquote><b><emoji id='5397733426654626788'>✨</emoji> 𝐏ᴏᴡєꝛєᴅ 𝐁ʏ ➜ [ᴀᴇʀᴀ ꭙ ᴍᴜsɪᴄ](https://t.me/kiru_bots)<emoji id='5397733426654626788'>✨</emoji></b></blockquote>"
 queue_5 : "❖ ᴛʜᴇʀᴇ's ᴏɴʟʏ ᴏɴᴇ ǫᴜᴇᴜᴇᴅ ᴛʀᴀᴄᴋ ɪɴ ᴘʟᴀʏʟɪsᴛ.\n\n● ᴀᴅᴅ ᴍᴏʀᴇ ᴛʀᴀᴄᴋs ᴛᴏ ᴄʜᴇᴄᴋ ʟɪsᴛ."
 queue_6 : "<b>❖ ᴅᴜʀᴀᴛɪᴏɴ ➥</b> ᴜɴᴋɴᴏᴡɴ ᴅᴜʀᴀᴛɪᴏɴ sᴛʀᴇᴀᴍ\n\n● ᴄʟɪᴄᴋ ᴏɴ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ɢᴇᴛ ᴡʜᴏʟᴇ ǫᴜᴇᴜᴇᴅ ʟɪsᴛ."
 queue_7 : "\n❖ ᴄʟɪᴄᴋ ᴏɴ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ɢᴇᴛ ᴡʜᴏʟᴇ ǫᴜᴇᴜᴇᴅ ʟɪsᴛ."
 queue_8 : "<b>❖ {0} ᴘʟᴀʏᴇʀ</b> ❖\n\n● <b>sᴛʀᴇᴀᴍɪɴɢ ➥</b> {1}\n\n● <b>sᴛʀᴇᴀᴍ ᴛʏᴘᴇ ➥</b> {2}\n● <b>ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ ➥</b> {3}\n{4}"
 
-stream_1 : "<blockquote><b><emoji id='6255793039705377676'>🦋</emoji> 𝐒ᴛᴀꝛᴛєᴅ 𝐒ᴛꝛєᴀϻιηɢ <emoji id='6255793039705377676'>🦋</emoji></b></blockquote>\n<blockquote><b><emoji id='5238162283368035495'>🌙</emoji> 𝐓ιᴛʟє ➜</b> <a href={0}>{1}</a>\n<b><emoji id='5343597635926245720'>📄</emoji> 𝐃ᴜꝛᴀᴛιᴏη ➜</b> {2} ϻιηᴜᴛєs\n<b><emoji id='5296631769112525274'>👻</emoji> 𝐁ʏ ➜</b> {3}</blockquote>\n<blockquote><b><emoji id='5397733426654626788'>✨</emoji> 𝐏ᴏᴡєꝛєᴅ 𝐁ʏ ➜ ᴀᴇʀᴀ ꭙ ᴍᴜsɪᴄ <emoji id='5397733426654626788'>✨</emoji></b></blockquote>"
-stream_2 : "<blockquote><b><emoji id='6255793039705377676'>🦋</emoji> 𝐒ᴛᴀꝛᴛєᴅ 𝐒ᴛꝛєᴀϻιηɢ <emoji id='6255793039705377676'>🦋</emoji></b></blockquote>\n<blockquote><b><emoji id='5238162283368035495'>🌙</emoji> 𝐒ᴛꝛєᴀϻ 𝐓ʏᴘє ➜</b> 𝐋ιᴠє 𝐒ᴛꝛєᴀϻ\n<b><emoji id='5296631769112525274'>👻</emoji> 𝐁ʏ ➜</b> {0}</blockquote>\n<blockquote><b><emoji id='5397733426654626788'>✨</emoji> 𝐏ᴏᴡєꝛєᴅ 𝐁ʏ ➜ ᴀᴇʀᴀ ꭙ ᴍᴜsɪᴄ ♪ <emoji id='5397733426654626788'>✨</emoji></b></blockquote>"
+stream_1 : "<blockquote><b><emoji id='6255793039705377676'>🦋</emoji> 𝐒ᴛᴀꝛᴛєᴅ 𝐒ᴛꝛєᴀϻιηɢ <emoji id='6255793039705377676'>🦋</emoji></b></blockquote>\n<blockquote><b><emoji id='5238162283368035495'>🌙</emoji> 𝐓ιᴛʟє ➜</b> <a href={0}>{1}</a>\n<b><emoji id='5343597635926245720'>📄</emoji> 𝐃ᴜꝛᴀᴛιᴏη ➜</b> {2} ϻιηᴜᴛєs\n<b><emoji id='5296631769112525274'>👻</emoji> 𝐁ʏ ➜</b> {3}</blockquote>\n<blockquote><b><emoji id='5397733426654626788'>✨</emoji> 𝐏ᴏᴡєꝛєᴅ 𝐁ʏ ➜ [ᴀᴇʀᴀ ꭙ ᴍᴜsɪᴄ](https://t.me/kiru_bots)<emoji id='5397733426654626788'>✨</emoji></b></blockquote>"
+stream_2 : "<blockquote><b><emoji id='6255793039705377676'>🦋</emoji> 𝐒ᴛᴀꝛᴛєᴅ 𝐒ᴛꝛєᴀϻιηɢ <emoji id='6255793039705377676'>🦋</emoji></b></blockquote>\n<blockquote><b><emoji id='5238162283368035495'>🌙</emoji> 𝐒ᴛꝛєᴀϻ 𝐓ʏᴘє ➜</b> 𝐋ιᴠє 𝐒ᴛꝛєᴀϻ\n<b><emoji id='5296631769112525274'>👻</emoji> 𝐁ʏ ➜</b> {0}</blockquote>\n<blockquote><b><emoji id='5397733426654626788'>✨</emoji> 𝐏ᴏᴡєꝛєᴅ 𝐁ʏ ➜ [ᴀᴇʀᴀ ꭙ ᴍᴜsɪᴄ](https://t.me/kiru_bots)<emoji id='5397733426654626788'>✨</emoji></b></blockquote>"
 
 CLOSE_BUTTON  : "˹ 𝐂ʟᴏsє ˼"
 BACK_BUTTON : "˹ 𝐁ᴀᴄᴋ ˼"
