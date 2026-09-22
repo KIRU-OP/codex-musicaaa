@@ -1,31 +1,10 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
 import asyncio
 
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup,CallbackQuery
 
 from codex import YouTube, app
-from codex.core.call import Sagar
+from codex.core.call import Anony
 from codex.misc import SUDOERS, db
 from codex.utils.database import (
     get_active_chats,
@@ -41,18 +20,18 @@ from codex.utils.database import (
 from codex.utils.decorators.language import languageCB
 from codex.utils.formatters import seconds_to_min
 from codex.utils.inline import close_markup, stream_markup, stream_markup_timer
-from codex.utils.stream.autoclear import auto_clean
 from codex.utils.thumbnails import get_thumb
 from config import (
     BANNED_USERS,
-    SUPPORT_CHAT,
     SOUNCLOUD_IMG_URL,
     STREAM_IMG_URL,
+    SUPPORT_CHAT,
     TELEGRAM_AUDIO_URL,
     TELEGRAM_VIDEO_URL,
     adminlist,
     confirmer,
     votemode,
+    autoclean,
 )
 from strings import get_string
 
@@ -62,7 +41,7 @@ upvoters = {}
 
 @app.on_callback_query(filters.regex("ADMIN") & ~BANNED_USERS)
 @languageCB
-async def del_back_playlist(client, CallbackQuery, _):
+async def del_back_playlist(client, CallbackQuery:CallbackQuery, _):
     callback_data = CallbackQuery.data.strip()
     callback_request = callback_data.split(None, 1)[1]
     command, chat = callback_request.split("|")
@@ -109,9 +88,9 @@ async def del_back_playlist(client, CallbackQuery, _):
                 return await CallbackQuery.edit_message_text(f"ғᴀɪʟᴇᴅ.")
             try:
                 if current["vidid"] != exists["vidid"]:
-                    return await CallbackQuery.edit_message.text(_["admin_35"])
+                    return await CallbackQuery.edit_message_text(_["admin_35"])
                 if current["file"] != exists["file"]:
-                    return await CallbackQuery.edit_message.text(_["admin_35"])
+                    return await CallbackQuery.edit_message_text(_["admin_35"])
             except:
                 return await CallbackQuery.edit_message_text(_["admin_36"])
             try:
@@ -157,7 +136,7 @@ async def del_back_playlist(client, CallbackQuery, _):
             return await CallbackQuery.answer(_["admin_1"], show_alert=True)
         await CallbackQuery.answer()
         await music_off(chat_id)
-        await Sagar.pause_stream(chat_id)
+        await Anony.pause_stream(chat_id)
         await CallbackQuery.message.reply_text(
             _["admin_2"].format(mention), reply_markup=close_markup(_)
         )
@@ -166,13 +145,13 @@ async def del_back_playlist(client, CallbackQuery, _):
             return await CallbackQuery.answer(_["admin_3"], show_alert=True)
         await CallbackQuery.answer()
         await music_on(chat_id)
-        await Sagar.resume_stream(chat_id)
+        await Anony.resume_stream(chat_id)
         await CallbackQuery.message.reply_text(
             _["admin_4"].format(mention), reply_markup=close_markup(_)
         )
     elif command == "Stop" or command == "End":
         await CallbackQuery.answer()
-        await Sagar.stop_stream(chat_id)
+        await Anony.stop_stream(chat_id)
         await set_loop(chat_id, 0)
         await CallbackQuery.message.reply_text(
             _["admin_5"].format(mention), reply_markup=close_markup(_)
@@ -186,7 +165,8 @@ async def del_back_playlist(client, CallbackQuery, _):
             try:
                 popped = check.pop(0)
                 if popped:
-                    await auto_clean(popped)
+                    rem = popped["file"]
+                    autoclean.remove(rem)
                 if not check:
                     await CallbackQuery.edit_message_text(
                         f"➻ sᴛʀᴇᴀᴍ sᴋɪᴩᴩᴇᴅ 🎄\n│ \n└ʙʏ : {mention} 🥀"
@@ -198,7 +178,7 @@ async def del_back_playlist(client, CallbackQuery, _):
                         reply_markup=close_markup(_),
                     )
                     try:
-                        return await Sagar.stop_stream(chat_id)
+                        return await Anony.stop_stream(chat_id)
                     except:
                         return
             except:
@@ -212,7 +192,7 @@ async def del_back_playlist(client, CallbackQuery, _):
                         ),
                         reply_markup=close_markup(_),
                     )
-                    return await Sagar.stop_stream(chat_id)
+                    return await Anony.stop_stream(chat_id)
                 except:
                     return
         else:
@@ -221,6 +201,7 @@ async def del_back_playlist(client, CallbackQuery, _):
         queued = check[0]["file"]
         title = (check[0]["title"]).title()
         user = check[0]["by"]
+        user_id = check[0]["user_id"]
         duration = check[0]["dur"]
         streamtype = check[0]["streamtype"]
         videoid = check[0]["vidid"]
@@ -244,11 +225,11 @@ async def del_back_playlist(client, CallbackQuery, _):
             except:
                 image = None
             try:
-                await Sagar.skip_stream(chat_id, link, video=status, image=image)
+                await Anony.skip_stream(chat_id, link, video=status, image=image)
             except:
                 return await CallbackQuery.message.reply_text(_["call_6"])
             button = stream_markup(_, chat_id)
-            img = await get_thumb(videoid, chat_id=chat_id)
+            img = await get_thumb(videoid,user_id)
             run = await CallbackQuery.message.reply_photo(
                 photo=img,
                 caption=_["stream_1"].format(
@@ -280,11 +261,11 @@ async def del_back_playlist(client, CallbackQuery, _):
             except:
                 image = None
             try:
-                await Sagar.skip_stream(chat_id, file_path, video=status, image=image)
+                await Anony.skip_stream(chat_id, file_path, video=status, image=image)
             except:
                 return await mystic.edit_text(_["call_6"])
             button = stream_markup(_, chat_id)
-            img = await get_thumb(videoid, chat_id=chat_id)
+            img = await get_thumb(videoid,user_id)
             run = await CallbackQuery.message.reply_photo(
                 photo=img,
                 caption=_["stream_1"].format(
@@ -301,7 +282,7 @@ async def del_back_playlist(client, CallbackQuery, _):
             await mystic.delete()
         elif "index_" in queued:
             try:
-                await Sagar.skip_stream(chat_id, videoid, video=status)
+                await Anony.skip_stream(chat_id, videoid, video=status)
             except:
                 return await CallbackQuery.message.reply_text(_["call_6"])
             button = stream_markup(_, chat_id)
@@ -324,7 +305,7 @@ async def del_back_playlist(client, CallbackQuery, _):
                 except:
                     image = None
             try:
-                await Sagar.skip_stream(chat_id, queued, video=status, image=image)
+                await Anony.skip_stream(chat_id, queued, video=status, image=image)
             except:
                 return await CallbackQuery.message.reply_text(_["call_6"])
             if videoid == "telegram":
@@ -355,7 +336,7 @@ async def del_back_playlist(client, CallbackQuery, _):
                 db[chat_id][0]["markup"] = "tg"
             else:
                 button = stream_markup(_, chat_id)
-                img = await get_thumb(videoid, chat_id=chat_id)
+                img = await get_thumb(videoid,user_id)
                 run = await CallbackQuery.message.reply_photo(
                     photo=img,
                     caption=_["stream_1"].format(
@@ -416,7 +397,3 @@ async def markup_timer():
 
 
 asyncio.create_task(markup_timer())
-
-
-
-
