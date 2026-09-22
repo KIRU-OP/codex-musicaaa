@@ -1,26 +1,4 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
 import asyncio
-
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import (
     ChatAdminRequired,
@@ -28,7 +6,7 @@ from pyrogram.errors import (
     UserAlreadyParticipant,
     UserNotParticipant,
 )
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from codex import YouTube, app
 from codex.misc import SUDOERS
@@ -49,7 +27,7 @@ links = {}
 
 
 def PlayWrapper(command):
-    async def wrapper(client, message):
+    async def wrapper(client, message:Message):
         language = await get_lang(message.chat.id)
         _ = get_string(language)
         if message.sender_chat:
@@ -58,12 +36,12 @@ def PlayWrapper(command):
                     [
                         InlineKeyboardButton(
                             text="ʜᴏᴡ ᴛᴏ ғɪx ?",
-                            callback_data="SagarmousAdmin",
+                            callback_data="AnonymousAdmin",
                         ),
                     ]
                 ]
             )
-            return await message.reply_text(_["general_3"], reply_markup=upl)
+            return await message.reply_text(_["general_3"], reply_markup=upl)          
 
         if await is_maintenance() is False:
             if message.from_user.id not in SUDOERS:
@@ -138,7 +116,10 @@ def PlayWrapper(command):
             userbot = await get_assistant(chat_id)
             try:
                 try:
-                    get = await app.get_chat_member(chat_id, userbot.id)
+                    try:
+                        get = await app.get_chat_member(chat_id, int(userbot.id))
+                    except:
+                        get = await app.get_chat_member(chat_id, userbot.username)
                 except ChatAdminRequired:
                     return await message.reply_text(_["call_1"])
                 if (
@@ -200,7 +181,7 @@ def PlayWrapper(command):
                     await userbot.resolve_peer(chat_id)
                 except:
                     pass
-
+        
         return await command(
             client,
             message,
