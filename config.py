@@ -122,6 +122,9 @@ SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/about_deadly_venom")
 # SUPPORT_CHAT - bot ka official support group/chat link
 SUPPORT_CHAT = getenv("SUPPORT_CHAT", "https://t.me/+Dv-MzFXDPCdkNWU1")
 
+# UPDATE_CHANNEL - bot ke updates/announcements wala channel link
+# (Updates button isi link ko use karega)
+UPDATE_CHANNEL = getenv("UPDATE_CHANNEL", "https://t.me/kiru_bots")
 
 # ------------------------------------------------------------
 # ASSISTANT & SUGGESTION SETTINGS
