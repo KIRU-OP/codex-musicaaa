@@ -247,7 +247,7 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 </p>
 
 <p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=20&pause=1000&color=F700FF&center=true&vCenter=true&width=435&lines=Made+with+%E2%9D%A4%EF%B8%8F+by+AERA MUSIC BOT" alt="Made by" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=20&pause=1000&color=F700FF&center=true&vCenter=true&width=435&lines=Made+with+%E2%9D%A4%EF%B8%8F+by+KIRU_OPS" alt="Made by" />
 </p>
 
 <p align="center">⭐ If you like this project, don't forget to star the repo! ⭐</p>
