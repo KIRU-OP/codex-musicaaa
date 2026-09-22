@@ -8,33 +8,30 @@ def stream_markup_timer(_, chat_id, played, dur):
     played_sec = time_to_seconds(played)
     duration_sec = time_to_seconds(dur)
     percentage = (played_sec / duration_sec) * 100
-    umm = math.floor(percentage)
-    if 0 < umm <= 10:
-        bar = "▰▱▱▱▱▱▱▱▱▱"
-    elif 10 < umm < 20:
-        bar = "▰▰▱▱▱▱▱▱▱▱"
-    elif 20 <= umm < 30:
-        bar = "▰▰▰▱▱▱▱▱▱▱"
-    elif 30 <= umm < 40:
-        bar = "▰▰▰▰▱▱▱▱▱▱"
-    elif 40 <= umm < 50:
-        bar = "▰▰▰▰▰▱▱▱▱▱"
-    elif 50 <= umm < 60:
-        bar = "▰▰▰▰▰▰▱▱▱▱"
-    elif 60 <= umm < 70:
-        bar = "▰▰▰▰▰▰▰▱▱▱"
-    elif 70 <= umm < 80:
-        bar = "▰▰▰▰▰▰▰▰▱▱"
-    elif 80 <= umm < 95:
-        bar = "▰▰▰▰▰▰▰▰▰▱"
-    else:
-        bar = "▰▰▰▰▰▰▰▰▰▰"
+    umm = max(0, min(100, math.floor(percentage)))
+
+    # Shrink the bar automatically when the timestamps get longer
+    # (e.g. "1:02:15" for an hour-long track) so the whole row
+    # still fits on small screens instead of overflowing.
+    time_len = max(len(played), len(dur))
+    if time_len <= 4:        # e.g. 0:13
+        bar_length = 10
+    elif time_len <= 5:      # e.g. 12:34
+        bar_length = 8
+    elif time_len <= 7:      # e.g. 1:02:15
+        bar_length = 6
+    else:                    # e.g. 12:02:15
+        bar_length = 4
+
+    filled = round((umm / 100) * bar_length)
+    filled = max(0, min(bar_length, filled))
+    bar = "▰" * filled + "▱" * (bar_length - filled)
 
     buttons = [
         # Row 1: Progress bar with timing
         [
             InlineKeyboardButton(
-                text=f"{played.lower()}  {bar}  {dur.lower()}",
+                text=f"{played.lower()} {bar} {dur.lower()}",
                 callback_data="GetTimer"
             )
         ],
