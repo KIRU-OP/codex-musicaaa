@@ -32,9 +32,9 @@ API_ID = int(getenv("API_ID", "16457832"))
 
 API_HASH = getenv("API_HASH", "3030874d0befdb5d05597deacc3e83ab")
 
-BOT_TOKEN = getenv("BOT_TOKEN", "7000859933:AAEnaU9196qHT0bSyaoqROwmc_XCImYhP4E")#
+BOT_TOKEN = getenv("BOT_TOKEN", "")#
 
-MONGO_DB_URI = getenv("MONGO_DB_URI", "mongodb+srv://codexNew:Mongo@cluster0.zllsvlo.mongodb.net/?appName=Cluster0")
+MONGO_DB_URI = getenv("MONGO_DB_URI", "")
 
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 54000))
 
@@ -46,7 +46,7 @@ LOGGER_ID = int(getenv("LOGGER_ID", "-1002022622141"))
 
 OWNER_ID = int(getenv("OWNER_ID", "6625936112"))
 
-BOT_USERNAME = getenv("BOT_USERNAME" , "@Syn_Ixbot")
+BOT_USERNAME = getenv("BOT_USERNAME" , "")
 
 COMMAND_HANDLER = getenv("COMMAND_HANDLER", "! / .").split() + [""]
 
@@ -60,15 +60,15 @@ PING_URL = getenv("PING_URL", "")
 
 UPSTREAM_REPO = getenv(
     "UPSTREAM_REPO",
-    "https://github.com/TrickBySaqib/codexMusic",
+    "https://github.com/KIRU-OP/codex-music",
 )
 UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "main")
 GIT_TOKEN = getenv(
     "GIT_TOKEN", ""
 )  # Fill this variable if your upstream repository is private
 
-SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/Zcziiyy")
-SUPPORT_CHAT = getenv("SUPPORT_CHAT", "https://t.me/DEVTAL")
+SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/about_deadly_venom")
+SUPPORT_CHAT = getenv("SUPPORT_CHAT", "https://t.me/+Dv-MzFXDPCdkNWU1")
 
 
 AUTO_LEAVING_ASSISTANT = bool(getenv("AUTO_LEAVING_ASSISTANT", False))
