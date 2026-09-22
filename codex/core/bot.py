@@ -1,24 +1,3 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
 from pyrogram import Client, errors
 from pyrogram.enums import ChatMemberStatus, ParseMode
 
@@ -27,7 +6,7 @@ import config
 from ..logging import LOGGER
 
 
-class Sagar(Client):
+class Anony(Client):
     def __init__(self):
         LOGGER(__name__).info(f"Starting Bot...")
         super().__init__(
@@ -35,6 +14,8 @@ class Sagar(Client):
             api_id=config.API_ID,
             api_hash=config.API_HASH,
             bot_token=config.BOT_TOKEN,
+            in_memory=True,
+            parse_mode=ParseMode.HTML,
             max_concurrent_transmissions=7,
         )
 
@@ -48,7 +29,7 @@ class Sagar(Client):
         try:
             await self.send_message(
                 chat_id=config.LOGGER_ID,
-                text=f"<blockquote><emoji id='5397733426654626788'>✨</emoji> <b>{self.mention} sᴛᴀʀᴛᴇᴅ </b>\n\n<b>ɪᴅ :</b> <code>{self.id}</code>\n<b>ɴᴀᴍᴇ :</b> {self.name}\n<b>ᴜsᴇʀɴᴀᴍᴇ :</b> @{self.username}</blockquote>",
+                text=f"<u><b>» {self.mention} ʙᴏᴛ sᴛᴀʀᴛᴇᴅ :</b><u>\n\nɪᴅ : <code>{self.id}</code>\nɴᴀᴍᴇ : {self.name}\nᴜsᴇʀɴᴀᴍᴇ : @{self.username}",
             )
         except (errors.ChannelInvalid, errors.PeerIdInvalid):
             LOGGER(__name__).error(
