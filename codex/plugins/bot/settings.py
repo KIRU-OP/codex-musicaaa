@@ -1,29 +1,4 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
-import config
 from pyrogram import filters
-from time import time, strftime, gmtime
-from pyrogram import __version__ as pver
-from pyrogram.types import InputMediaVideo, InputMediaPhoto
 from pyrogram.enums import ChatType
 from pyrogram.errors import MessageNotModified
 from pyrogram.types import (
@@ -103,12 +78,8 @@ async def settings_back_markup(client, CallbackQuery: CallbackQuery, _):
         await app.resolve_peer(OWNER_ID)
         OWNER = OWNER_ID
         buttons = private_panel(_)
-        return await CallbackQuery.edit_message_media(
-            InputMediaPhoto(
-                media=config.START_IMG_URL,
-                caption=_["start_2"].format(
-                    CallbackQuery.from_user.mention, app.mention),
-            ),
+        return await CallbackQuery.edit_message_text(
+            _["start_2"].format(CallbackQuery.from_user.mention, app.mention),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
     else:
@@ -117,66 +88,6 @@ async def settings_back_markup(client, CallbackQuery: CallbackQuery, _):
             reply_markup=InlineKeyboardMarkup(buttons)
         )
 
-
-@app.on_callback_query(filters.regex("gib_source"))
-async def gib_repo_callback(_, callback_query):
-    await callback_query.edit_message_media(
-        media=InputMediaVideo(
-            "https://telegra.ph/file/b1367262cdfbcd0b2af07.mp4", 
-            has_spoiler=True, 
-            caption="ʟᴜɴᴅ ʟᴇʟᴇ ᴍᴇʀᴀ ʀᴇᴘᴏ ᴋʏᴀ ᴋᴀʀᴇɢᴀ, ʟᴇɢᴀ ᴋʏᴀ ʙʜᴏsᴀᴅɪᴋᴇ"
-        ),
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(text="• ʙᴀᴄᴋ •", callback_data="settingsback_helper"),
-                    InlineKeyboardButton(text="• ᴄʟᴏsᴇ •", callback_data="close")
-                ]
-            ]
-        ),
-    )
-
-@app.on_callback_query(filters.regex("^bot_info_data$"))
-async def show_bot_info(c: app, q: CallbackQuery):
-    start = time()
-    x = await c.send_message(q.message.chat.id, "Pinging..")
-    delta_ping = time() - start
-    await x.delete()
-    txt = f"""
-    🏓 Pɪɴɢ: {delta_ping * 1000:.3f} ms   
-    🐍 Pʏᴛʜᴏɴ Vᴇʀsɪᴏɴ: 3.10.4
-    🔥 Pʏʀᴏɢʀᴀᴍ Vᴇʀsɪᴏɴ: {pver}
-    """
-    await q.answer(txt, show_alert=True)
-    return
-
-@app.on_callback_query(filters.regex("dil_codex") & ~BANNED_USERS)
-@languageCB
-async def support(client, CallbackQuery, _):
-    await CallbackQuery.edit_message_text(
-        text="ʜᴇʀᴇ ᴀʀᴇ ꜱᴏᴍᴇ ɪᴍᴘᴏʀᴛᴀɴᴛ ʟɪɴᴋꜱ.",
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        text="sᴜᴘᴘᴏʀᴛ", url=config.SUPPORT_CHAT
-                    ),
-                    InlineKeyboardButton(
-                        text="ᴄʜᴀɴɴᴇʟ", url=config.SUPPORT_CHANNEL
-                    ),
-
-                ],
-                [
-                    InlineKeyboardButton(
-                        text="ᴅᴇᴠs", user_id=config.OWNER_ID
-                    ),           
-                    InlineKeyboardButton(
-                        text="ʙᴀᴄᴋ", callback_data=f"settingsback_helper"
-                    )
-                ],
-            ]
-        ),
-    )
 
 @app.on_callback_query(
     filters.regex(
