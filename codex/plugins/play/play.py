@@ -1,97 +1,36 @@
 import random
 import string
-import re
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InputMediaPhoto, Message
-
-# ─────────────────────────────────────────
-# SECURITY: Dangerous shell characters
-# ─────────────────────────────────────────
-_DANGER_RE = re.compile(r'[$|&;`<>\\]|\$\{')
-
-# ─────────────────────────────────────────
-# NSFW FILTER: Word-boundary aware
-# ─────────────────────────────────────────
-_BLOCKED_WORDS = [
-    "xxx", "porn", "sex", "nude", "drugs", "drug",
-    "nsfw", "rape", "xnxx", "xvideos", "hot video",
-    "sexy", "land", "pron", "fuck", "sexx", "sexxx","Jussstttt Kiddinngggg",
-]
-_BLOCKED_RE = re.compile(
-    r'\b(' + '|'.join(re.escape(w) for w in _BLOCKED_WORDS) + r')\b',
-    re.IGNORECASE,
-)
-
-_WARN_STICKERS = [
-    "CAACAgUAAxkBAAFGej1p0ik0JNBtOvrmVLM92NG3BY9XEgACKgwAAq-cEFeS7DCPCs49_jsE",
-    "CAACAgUAAxkBAAFGej9p0ik3XtiKYQh13zHWcWQDj9ws3gACtA4AAnDYGVeI7-X3Yd8JBjsE",
-    "CAACAgUAAxkBAAFGekFp0ik5WWEy4etIEwKqZZWSwD2c8wACKgsAAnbIEFe8P0r42zZZfDsE",
-    "CAACAgUAAxkBAAFGekNp0ik6Nowx5OmF1IsJL0354UFdwAACKA4AAt1uGVeG1mUN_zTK9zsE",
-    "CAACAgUAAxkBAAFGelBp0ipffTacP6bK3ik2BabuZJohkwACoh0AAsI8kFYAARHuC8AH2Jw7BA",
-]
-_STRICT_STICKER = "CAACAgUAAxkBAAFGekFp0ik5WWEy4etIEwKqZZWSwD2c8wACKgsAAnbIEFe8P0r42zZZfDsE"
-
-def _get_text(message: Message) -> str:
-    return (message.text or message.caption or "").strip()
-
-def _extract_query(message: Message) -> str:
-    text = _get_text(message)
-    parts = text.split(None, 1)
-    return parts[1].strip() if len(parts) > 1 else ""
-
-async def _send_security_warning(message: Message) -> None:
-    mention = message.from_user.mention if message.from_user else "User"
-    warn = (
-        f"🥀 **sᴇᴄᴜʀɪᴛʏ ᴀʟᴇʀᴛ!** {mention}\n\n"
-        "ᴏɴʟʏ ʟɪɴᴋs ᴀɴᴅ ᴛᴇxᴛ ǫᴜᴇʀɪᴇs ᴀʀᴇ ᴀʟʟᴏᴡᴇᴅ.\n"
-        "ɪғ ʏᴏᴜ ᴅᴏ ᴛʜɪs ᴀɢᴀɪɴ, ɢʟᴏʙᴀʟ ʙᴀɴ ᴍᴀʏ ᴀᴘᴘʟʏ 🙂"
-    )
-    await message.reply_text(warn)
-    try:
-        await message.reply_sticker(random.choice(_WARN_STICKERS))
-    except Exception:
-        pass
-
-async def _send_blocked_warning(message: Message) -> None:
-    mention = message.from_user.mention if message.from_user else "User"
-    blocked = (
-        "<blockquote><b>🚫 ᴄᴏɴᴛᴇɴᴛ ʙʟᴏᴄᴋᴇᴅ!</b></blockquote>\n\n"
-        "<blockquote>"
-        "<b>⚠️ ᴛʜɪs ǫᴜᴇʀʏ ᴄᴏɴᴛᴀɪɴs ɪʟʟᴇɢᴀʟ ᴏʀ ᴘʀᴏʜɪʙɪᴛᴇᴅ ᴛᴇʀᴍs.</b>\n"
-        f"<b>🛑 ᴘʟᴇᴀsᴇ ᴜsᴇ ᴀᴘᴘʀᴏᴘʀɪᴀᴛᴇ sᴇᴀʀᴄʜ ᴛᴇʀᴍs, {mention}.</b>"
-        "</blockquote>"
-    )
-    await message.reply_text(blocked)
-    try:
-        await message.reply_sticker(_STRICT_STICKER)
-    except Exception:
-        pass
 from pytgcalls.exceptions import NoActiveGroupCall
 
 import config
-from codex import Apple, Resso, SoundCloud, Spotify, Telegram, YouTube, app
-from codex.core.call import Sagar
-from codex.utils import seconds_to_min, time_to_seconds
-from codex.utils.channelplay import get_channeplayCB
-from codex.utils.decorators.language import languageCB
-from codex.utils.decorators.play import PlayWrapper
-from codex.utils.formatters import formats
-from codex.utils.inline import (
+from Spy import Apple, Resso, SoundCloud, Spotify, Telegram, YouTube, app
+from Spy.core.call import Sagar
+from Spy.utils import seconds_to_min, time_to_seconds
+from Spy.utils.channelplay import get_channeplayCB
+from Spy.utils.decorators.language import languageCB
+from Spy.utils.decorators.play import PlayWrapper
+from Spy.utils.formatters import formats
+from Spy.utils.inline import (
     botplaylist_markup,
     livestream_markup,
     playlist_markup,
     slider_markup,
     track_markup,
 )
-from codex.utils.logger import play_logs
-from codex.utils.stream.stream import stream
+from Spy.utils.logger import play_logs
+from Spy.utils.stream.stream import stream
 from config import BANNED_USERS, lyrical
 
 
-EMOJII = [ "🥀 𝐏ɤσƈɛssɩŋʛ..." ]
+EMOJII = ["🔥", "💋", "🥺", "😒", "💖",
+          "💘", "💕", "✨", "🧪", "🥰",
+          "🚩", "🍌", "🫦", "💔", "🦠",
+          "😓", "🫧"]
 
 @app.on_message(
-        filters.command(
+    filters.command(
         [
             "play",
             "vplay",
@@ -101,9 +40,7 @@ EMOJII = [ "🥀 𝐏ɤσƈɛssɩŋʛ..." ]
             "vplayforce",
             "cplayforce",
             "cvplayforce",
-            "lay",
-        ],
-        prefixes=["/", "!", "%", ",", "@", "#","p","P"],
+        ]
     )
     & filters.group
     & ~BANNED_USERS
@@ -120,16 +57,6 @@ async def play_commnd(
     url,
     fplay,
 ):
-    raw_text = _get_text(message)
-    if raw_text and _DANGER_RE.search(raw_text):
-        await _send_security_warning(message)
-        return
-
-    query_raw = _extract_query(message)
-    if query_raw and _BLOCKED_RE.search(query_raw):
-        await _send_blocked_warning(message)
-        return
-
     Emoji = random.choice(EMOJII)
     mystic = await message.reply_text(
         _["play_2"].format(channel) if channel else Emoji
@@ -470,7 +397,6 @@ async def play_commnd(
                 photo=img,
                 caption=cap,
                 reply_markup=InlineKeyboardMarkup(buttons),
-                has_spoiler=True,
             )
             return await play_logs(message, streamtype=f"Playlist : {plist_type}")
         else:
@@ -487,7 +413,6 @@ async def play_commnd(
                 await mystic.delete()
                 await message.reply_photo(
                     photo=details["thumb"],
-                    has_spoiler=True,
                     caption=_["play_10"].format(
                         details["title"].title(),
                         details["duration_min"],
@@ -508,7 +433,6 @@ async def play_commnd(
                     photo=img,
                     caption=cap,
                     reply_markup=InlineKeyboardMarkup(buttons),
-                    has_spoiler=True,
                 )
                 return await play_logs(message, streamtype=f"URL Searched Inline")
 
@@ -744,6 +668,3 @@ async def slider_queries(client, CallbackQuery, _):
         return await CallbackQuery.edit_message_media(
             media=med, reply_markup=InlineKeyboardMarkup(buttons)
         )
-
-
-
