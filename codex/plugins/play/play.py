@@ -5,29 +5,26 @@ from pyrogram.types import InlineKeyboardMarkup, InputMediaPhoto, Message
 from pytgcalls.exceptions import NoActiveGroupCall
 
 import config
-from Spy import Apple, Resso, SoundCloud, Spotify, Telegram, YouTube, app
-from Spy.core.call import Sagar
-from Spy.utils import seconds_to_min, time_to_seconds
-from Spy.utils.channelplay import get_channeplayCB
-from Spy.utils.decorators.language import languageCB
-from Spy.utils.decorators.play import PlayWrapper
-from Spy.utils.formatters import formats
-from Spy.utils.inline import (
+from codex import Apple, Resso, SoundCloud, Spotify, Telegram, YouTube, app
+from codex.core.call import Sagar
+from codex.utils import seconds_to_min, time_to_seconds
+from codex.utils.channelplay import get_channeplayCB
+from codex.utils.decorators.language import languageCB
+from codex.utils.decorators.play import PlayWrapper
+from codex.utils.formatters import formats
+from codex.utils.inline import (
     botplaylist_markup,
     livestream_markup,
     playlist_markup,
     slider_markup,
     track_markup,
 )
-from Spy.utils.logger import play_logs
-from Spy.utils.stream.stream import stream
+from codex.utils.logger import play_logs
+from codex.utils.stream.stream import stream
 from config import BANNED_USERS, lyrical
 
 
-EMOJII = ["🔥", "💋", "🥺", "😒", "💖",
-          "💘", "💕", "✨", "🧪", "🥰",
-          "🚩", "🍌", "🫦", "💔", "🦠",
-          "😓", "🫧"]
+EMOJII = ["🥀 𝐏ɤσƈɛssɩŋʛ..."]
 
 @app.on_message(
     filters.command(
