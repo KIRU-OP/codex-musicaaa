@@ -1,24 +1,3 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
 import asyncio
 import time
 
@@ -27,7 +6,7 @@ from pyrogram.enums import ChatMembersFilter
 from pyrogram.types import CallbackQuery, Message
 
 from codex import app
-from codex.core.call import Sagar
+from codex.core.call import Anony
 from codex.misc import db
 from codex.utils.database import get_assistant, get_authuser_names, get_cmode
 from codex.utils.decorators import ActualAdminCB, AdminActual, language
@@ -74,7 +53,7 @@ async def restartbot(client, message: Message, _):
     await asyncio.sleep(1)
     try:
         db[message.chat.id] = []
-        await Sagar.stop_stream_force(message.chat.id)
+        await Anony.stop_stream_force(message.chat.id)
     except:
         pass
     userbot = await get_assistant(message.chat.id)
@@ -101,22 +80,20 @@ async def restartbot(client, message: Message, _):
             pass
         try:
             db[chat_id] = []
-            await Sagar.stop_stream_force(chat_id)
+            await Anony.stop_stream_force(chat_id)
         except:
             pass
     return await mystic.edit_text(_["reload_5"].format(app.mention))
 
 
 @app.on_callback_query(filters.regex("close") & ~BANNED_USERS)
-async def close_menu(_, query: CallbackQuery):
+async def close_menu(_, CallbackQuery):
     try:
-        await query.answer()
-        await query.message.delete()
-        umm = await query.message.reply_text(
-            f"Cʟᴏsᴇᴅ ʙʏ : {query.from_user.mention}"
+        await CallbackQuery.answer()
+        await CallbackQuery.message.delete()
+        await CallbackQuery.message.reply_text(
+            f"Cʟᴏsᴇᴅ ʙʏ : {CallbackQuery.from_user.mention}"
         )
-        await asyncio.sleep(7)
-        await umm.delete()
     except:
         pass
 
