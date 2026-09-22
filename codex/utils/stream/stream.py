@@ -1,24 +1,3 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
 import os
 from random import randint
 from typing import Union
@@ -27,12 +6,12 @@ from pyrogram.types import InlineKeyboardMarkup
 
 import config
 from codex import Carbon, YouTube, app
-from codex.core.call import Sagar
+from codex.core.call import Anony
 from codex.misc import db
 from codex.utils.database import add_active_video_chat, is_active_chat
 from codex.utils.exceptions import AssistantErr
 from codex.utils.inline import aq_markup, close_markup, stream_markup
-from codex.utils.pastebin import SagarBin
+from codex.utils.pastebin import AnonyBin
 from codex.utils.stream.queue import put_queue, put_queue_index
 from codex.utils.thumbnails import get_thumb
 
@@ -53,7 +32,7 @@ async def stream(
     if not result:
         return
     if forceplay:
-        await Sagar.force_stop_stream(chat_id)
+        await Anony.force_stop_stream(chat_id)
     if streamtype == "playlist":
         msg = f"{_['play_19']}\n\n"
         count = 0
@@ -100,7 +79,7 @@ async def stream(
                     )
                 except:
                     raise AssistantErr(_["play_14"])
-                await Sagar.join_call(
+                await Anony.join_call(
                     chat_id,
                     original_chat_id,
                     file_path,
@@ -119,12 +98,11 @@ async def stream(
                     "video" if video else "audio",
                     forceplay=forceplay,
                 )
-                img = await get_thumb(vidid, chat_id=chat_id)
+                img = await get_thumb(vidid,user_id)
                 button = stream_markup(_, chat_id)
                 run = await app.send_photo(
                     original_chat_id,
                     photo=img,
-                    has_spoiler=True,
                     caption=_["stream_1"].format(
                         f"https://t.me/{app.username}?start=info_{vidid}",
                         title[:23],
@@ -138,7 +116,7 @@ async def stream(
         if count == 0:
             return
         else:
-            link = await SagarBin(msg)
+            link = await AnonyBin(msg)
             lines = msg.count("\n")
             if lines >= 17:
                 car = os.linesep.join(msg.split(os.linesep)[:17])
@@ -187,7 +165,7 @@ async def stream(
         else:
             if not forceplay:
                 db[chat_id] = []
-            await Sagar.join_call(
+            await Anony.join_call(
                 chat_id,
                 original_chat_id,
                 file_path,
@@ -206,12 +184,11 @@ async def stream(
                 "video" if video else "audio",
                 forceplay=forceplay,
             )
-            img = await get_thumb(vidid, chat_id=chat_id)
+            img = await get_thumb(vidid,user_id)
             button = stream_markup(_, chat_id)
             run = await app.send_photo(
                 original_chat_id,
                 photo=img,
-                has_spoiler=True,
                 caption=_["stream_1"].format(
                     f"https://t.me/{app.username}?start=info_{vidid}",
                     title[:23],
@@ -248,7 +225,7 @@ async def stream(
         else:
             if not forceplay:
                 db[chat_id] = []
-            await Sagar.join_call(chat_id, original_chat_id, file_path, video=None)
+            await Anony.join_call(chat_id, original_chat_id, file_path, video=None)
             await put_queue(
                 chat_id,
                 original_chat_id,
@@ -264,7 +241,6 @@ async def stream(
             button = stream_markup(_, chat_id)
             run = await app.send_photo(
                 original_chat_id,
-                has_spoiler=True,
                 photo=config.SOUNCLOUD_IMG_URL,
                 caption=_["stream_1"].format(
                     config.SUPPORT_CHAT, title[:23], duration_min, user_name
@@ -301,7 +277,7 @@ async def stream(
         else:
             if not forceplay:
                 db[chat_id] = []
-            await Sagar.join_call(chat_id, original_chat_id, file_path, video=status)
+            await Anony.join_call(chat_id, original_chat_id, file_path, video=status)
             await put_queue(
                 chat_id,
                 original_chat_id,
@@ -357,7 +333,7 @@ async def stream(
             n, file_path = await YouTube.video(link)
             if n == 0:
                 raise AssistantErr(_["str_3"])
-            await Sagar.join_call(
+            await Anony.join_call(
                 chat_id,
                 original_chat_id,
                 file_path,
@@ -376,12 +352,11 @@ async def stream(
                 "video" if video else "audio",
                 forceplay=forceplay,
             )
-            img = await get_thumb(vidid, chat_id=chat_id)
+            img = await get_thumb(vidid,user_id)
             button = stream_markup(_, chat_id)
             run = await app.send_photo(
                 original_chat_id,
                 photo=img,
-                has_spoiler=True,
                 caption=_["stream_1"].format(
                     f"https://t.me/{app.username}?start=info_{vidid}",
                     title[:23],
@@ -416,7 +391,7 @@ async def stream(
         else:
             if not forceplay:
                 db[chat_id] = []
-            await Sagar.join_call(
+            await Anony.join_call(
                 chat_id,
                 original_chat_id,
                 link,
@@ -437,7 +412,6 @@ async def stream(
             run = await app.send_photo(
                 original_chat_id,
                 photo=config.STREAM_IMG_URL,
-                has_spoiler=True,
                 caption=_["stream_2"].format(user_name),
                 reply_markup=InlineKeyboardMarkup(button),
             )
