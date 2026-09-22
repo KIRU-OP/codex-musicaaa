@@ -17,9 +17,9 @@ from pytgcalls.types.input_stream.quality import HighQualityAudio, MediumQuality
 from pytgcalls.types.stream import StreamAudioEnded
 
 import config
-from Spy import LOGGER, YouTube, app
-from Spy.misc import db
-from Spy.utils.database import (
+from codex import LOGGER, YouTube, app
+from codex.misc import db
+from codex.utils.database import (
     add_active_chat,
     add_active_video_chat,
     get_lang,
@@ -31,11 +31,11 @@ from Spy.utils.database import (
     remove_active_video_chat,
     set_loop,
 )
-from Spy.utils.exceptions import AssistantErr
-from Spy.utils.formatters import check_duration, seconds_to_min, speed_converter
-from Spy.utils.inline.play import stream_markup
-from Spy.utils.stream.autoclear import auto_clean
-from Spy.utils.thumbnails import get_thumb
+from codex.utils.exceptions import AssistantErr
+from codex.utils.formatters import check_duration, seconds_to_min, speed_converter
+from codex.utils.inline.play import stream_markup
+from codex.utils.stream.autoclear import auto_clean
+from codex.utils.thumbnails import get_thumb
 from strings import get_string
 
 autoend = {}
