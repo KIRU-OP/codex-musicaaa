@@ -1,72 +1,71 @@
-# Copyright (c) 2025 @SUDEEPBOTS <HellfireDevs>
-# Location: delhi,noida
-#
-# All rights reserved.
-#
-# This code is the intellectual SUDEEPBOTS.
-# You are not allowed to copy, modify, redistribute, or use this
-# code for commercial or personal projects without explicit permission.
-#
-# Allowed:
-# - Forking for personal learning
-# - Submitting improvements via pull requests
-#
-# Not Allowed:
-# - Claiming this code as your own
-# - Re-uploading without credit or permission
-# - Selling or using commercially
-#
-# Contact for permissions:
-# Email: sudeepgithub@gmail.com
-
+import random
 import time
-import random 
+
+from py_yt import VideosSearch
 from pyrogram import filters
 from pyrogram.enums import ChatType
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from youtubesearchpython.__future__ import VideosSearch
 
 import config
 from codex import app
 from codex.misc import _boot_
 from codex.plugins.sudo.sudoers import sudoers_list
-from codex.utils.database import (
-    add_served_chat,
-    add_served_user,
-    blacklisted_chats,
-    get_lang,
-    is_banned_user,
-    is_on_off,
-)
+from codex.utils.database import (add_served_chat, add_served_user,
+                                       blacklisted_chats, get_lang,
+                                       is_banned_user, is_on_off)
 from codex.utils.decorators.language import LanguageStart
 from codex.utils.formatters import get_readable_time
-from codex.utils.inline import first_page, private_panel, start_panel
-from config import BANNED_USERS, VALID_EMOJII, EFFECT_IDS
+from codex.utils.inline import help_pannel, private_panel, start_panel
+from config import BANNED_USERS
 from strings import get_string
+
+EFFECT_ID = [
+    5104841245755180586,  
+    5107584321108051014,  
+    5044134455711629726,  
+    5046509860389126442,  
+    5046589136895476101,  
+    5104858069142078462,  
+    5104841245755180586,  
+    5107584321108051014,  
+    5046589136895476101,  
+    5104858069142078462,  
+    5104841245755180586,  
+    5107584321108051014,  
+]
+
+Kanha_Pic = [
+    "https://files.catbox.moe/v00l7e.jpg",
+    "https://files.catbox.moe/uow54p.jpg",
+    "https://files.catbox.moe/z0t6l3.jpg",
+    "https://files.catbox.moe/jdw0il.jpg",
+    "https://files.catbox.moe/izfi0y.jpg",
+    "https://files.catbox.moe/7wx3ha.jpg",
+    "https://files.catbox.moe/2u0srm.jpg",
+    "https://files.catbox.moe/tqwy0q.jpg",
+    "https://files.catbox.moe/vbgrx1.jpg"
+]
+
+
+def get_start_img() -> str:
+    """Returns a random start image URL."""
+    return random.choice(Kanha_Pic)
 
 
 @app.on_message(filters.command(["start"]) & filters.private & ~BANNED_USERS)
 @LanguageStart
 async def start_pm(client, message: Message, _):
     await add_served_user(message.from_user.id)
-    random_emoji = random.choice(VALID_EMOJII)  # Pick a valid emoji
-    try:
-        await message.react(random_emoji)
-    except Exception as e:
-        print(f"Error reacting with emoji: {e}")
-
-    random_effect = int(random.choice(EFFECT_IDS))
-    
+    await message.react("🍓", big=True)
     if len(message.text.split()) > 1:
         name = message.text.split(None, 1)[1]
         if name[0:4] == "help":
-            keyboard = first_page(_)
+            keyboard = help_pannel(_)
             return await message.reply_photo(
-                photo=config.START_IMG_URL,
+                photo=get_start_img(),
+                has_spoiler=False,
                 caption=_["help_1"].format(config.SUPPORT_CHAT),
                 reply_markup=keyboard,
-                has_spoiler=True,
-                message_effect_id=random_effect,
             )
         if name[0:3] == "sud":
             await sudoers_list(client=client, message=message, _=_)
@@ -74,11 +73,10 @@ async def start_pm(client, message: Message, _):
                 return await app.send_message(
                     chat_id=config.LOGGER_ID,
                     text=f"{message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴄʜᴇᴄᴋ <b>sᴜᴅᴏʟɪsᴛ</b>.\n\n<b>ᴜsᴇʀ ɪᴅ :</b> <code>{message.from_user.id}</code>\n<b>ᴜsᴇʀɴᴀᴍᴇ :</b> @{message.from_user.username}",
-                    message_effect_id=random_effect,
                 )
             return
         if name[0:3] == "inf":
-            m = await message.reply_text("🔎")
+            m = await message.reply_text("👀")
             query = (str(name)).replace("info_", "", 1)
             query = f"https://www.youtube.com/watch?v={query}"
             results = VideosSearch(query, limit=1)
@@ -106,9 +104,9 @@ async def start_pm(client, message: Message, _):
             await app.send_photo(
                 chat_id=message.chat.id,
                 photo=thumbnail,
+                has_spoiler=True,
                 caption=searched_text,
                 reply_markup=key,
-                has_spoiler=True,
             )
             if await is_on_off(2):
                 return await app.send_message(
@@ -118,10 +116,11 @@ async def start_pm(client, message: Message, _):
     else:
         out = private_panel(_)
         await message.reply_photo(
-            photo=config.START_IMG_URL,
+            photo=get_start_img(),
+            has_spoiler=True,
+            message_effect_id=random.choice(EFFECT_ID),
             caption=_["start_2"].format(message.from_user.mention, app.mention),
             reply_markup=InlineKeyboardMarkup(out),
-            has_spoiler=True,
         )
         if await is_on_off(2):
             return await app.send_message(
@@ -130,16 +129,16 @@ async def start_pm(client, message: Message, _):
             )
 
 
-@app.on_message(filters.command(["mstart"]) & filters.group & ~BANNED_USERS)
+@app.on_message(filters.command(["start"]) & filters.group & ~BANNED_USERS)
 @LanguageStart
 async def start_gp(client, message: Message, _):
     out = start_panel(_)
     uptime = int(time.time() - _boot_)
     await message.reply_photo(
-        photo=config.START_IMG_URL,
+        photo=get_start_img(),
+        has_spoiler=True,
         caption=_["start_1"].format(app.mention, get_readable_time(uptime)),
         reply_markup=InlineKeyboardMarkup(out),
-        has_spoiler=True,
     )
     return await add_served_chat(message.chat.id)
 
@@ -172,7 +171,8 @@ async def welcome(client, message: Message):
 
                 out = start_panel(_)
                 await message.reply_photo(
-                    photo=config.START_IMG_URL,
+                    photo=get_start_img(),
+                    has_spoiler=True,
                     caption=_["start_3"].format(
                         message.from_user.first_name,
                         app.mention,
@@ -180,7 +180,6 @@ async def welcome(client, message: Message):
                         app.mention,
                     ),
                     reply_markup=InlineKeyboardMarkup(out),
-                    has_spoiler=True,
                 )
                 await add_served_chat(message.chat.id)
                 await message.stop_propagation()
